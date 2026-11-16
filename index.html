@@ -14,7 +14,8 @@
             .print-only { display: block !important; }
             .print-box { border: 1px solid #000 !important; box-shadow: none !important; background: #fff !important; color: #000 !important; }
             table { width: 100% !important; border-collapse: collapse !important; }
-            th, td { border: 1px solid #333 !important; padding: 6px !important; color: #000 !important; font-size: 11px !important; }
+            th, td, th *, td * { color: #000000 !important; border-color: #333333 !important; }
+            th, td { border: 1px solid #333 !important; padding: 6px !important; font-size: 11px !important; }
         }
         .print-only { display: none; }
     </style>
@@ -73,7 +74,7 @@
     <!-- ========================================================= -->
     <main class="max-w-7xl mx-auto px-4 pt-5 space-y-6">
 
-        <section class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <section id="sec-ringkasan" class="grid grid-cols-2 lg:grid-cols-5 gap-3">
             <div class="print-box bg-slate-800 border border-slate-700 p-3.5 rounded-xl">
                 <span class="text-[11px] text-slate-400 uppercase font-bold block">1. Total Anggaran Masuk</span>
                 <span id="kpi-pemasukan" class="text-base sm:text-lg font-black text-emerald-400">Rp0</span>
@@ -117,9 +118,14 @@
                 <h2 class="text-base sm:text-lg font-extrabold text-amber-400 uppercase">
                     <i class="fa-solid fa-user-check mr-1"></i> Daftar Pekerja, Jenis Pekerjaan, Kehadiran & Hutang
                 </h2>
-                <button onclick="window.bukaModalPekerja()" class="no-print bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-plus"></i> + Input Pekerja (PIN)
-                </button>
+                <div class="no-print flex flex-wrap gap-2">
+                    <button onclick="window.cetakBagianSaja('PEKERJA')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-print"></i> Cetak Tabel Pekerja Saja
+                    </button>
+                    <button onclick="window.bukaModalPekerja()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-plus"></i> + Input Pekerja (PIN)
+                    </button>
+                </div>
             </div>
 
             <div class="print-box bg-slate-800/90 border border-slate-700 rounded-xl overflow-x-auto shadow-lg">
@@ -151,9 +157,14 @@
                 <h2 class="text-base sm:text-lg font-extrabold text-sky-400 uppercase">
                     <i class="fa-solid fa-receipt mr-1"></i> Pembukuan Biaya Bahan Material & Dana Masuk Proyek
                 </h2>
-                <button onclick="window.bukaModalKeuangan()" class="no-print bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-plus"></i> + Input Bahan / Kas (PIN)
-                </button>
+                <div class="no-print flex flex-wrap gap-2">
+                    <button onclick="window.cetakBagianSaja('BAHAN')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-print"></i> Cetak Tabel Bahan Saja
+                    </button>
+                    <button onclick="window.bukaModalKeuangan()" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-plus"></i> + Input Bahan / Kas (PIN)
+                    </button>
+                </div>
             </div>
 
             <div class="print-box bg-slate-800/90 border border-slate-700 rounded-xl overflow-x-auto shadow-lg">
@@ -638,9 +649,36 @@
             }
         };
 
+        // Fungsi Cetak Semua (Lengkap dengan Ringkasan Atas)
         window.cetakLaporanPDF = function() {
+            const ringkasan = document.getElementById("sec-ringkasan");
+            if (ringkasan) ringkasan.classList.remove("hidden");
             window.pindahTab("SEMUA");
             setTimeout(() => { window.print(); }, 300);
+        };
+
+        // Fungsi Cetak Khusus Hanya Tabel yang Ditandai (Pekerja Saja / Bahan Saja)
+        window.cetakBagianSaja = function(bagian) {
+            const ringkasan = document.getElementById("sec-ringkasan");
+            const secPekerja = document.getElementById("sec-pekerja");
+            const secBahan = document.getElementById("sec-bahan");
+
+            // Sembunyikan 5 kotak ringkasan atas agar fokus hanya pada tabel yang dipilih
+            if (ringkasan) ringkasan.classList.add("hidden");
+
+            if (bagian === "PEKERJA") {
+                secPekerja.classList.remove("hidden");
+                secBahan.classList.add("hidden");
+            } else if (bagian === "BAHAN") {
+                secPekerja.classList.add("hidden");
+                secBahan.classList.remove("hidden");
+            }
+
+            setTimeout(() => {
+                window.print();
+                // Kembalikan 5 kotak ringkasan setelah selesai print
+                if (ringkasan) ringkasan.classList.remove("hidden");
+            }, 300);
         };
 
         // Backup & Restore Data (Untuk Sinkronisasi Cepat HP <-> PC)
