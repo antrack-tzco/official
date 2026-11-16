@@ -106,7 +106,10 @@
                 <i class="fa-solid fa-boxes-stacked mr-1"></i> 2. Biaya Bahan & Kas Masuk
             </button>
             <button onclick="window.pindahTab('SEMUA')" id="tab-btn-SEMUA" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">
-                <i class="fa-solid fa-print mr-1"></i> 3. Tampilan Laporan Lengkap (Siap Print)
+                <i class="fa-solid fa-print mr-1"></i> 3. Tampilan Laporan Lengkap
+            </button>
+            <button onclick="window.pindahTab('BULANAN')" id="tab-btn-BULANAN" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">
+                <i class="fa-solid fa-calendar-days mr-1"></i> 4. Laporan Bulanan & Harian + Gambar
             </button>
         </div>
 
@@ -150,6 +153,50 @@
             </div>
         </section>
 
+        <!-- ========================================================= -->
+        <!-- [04.B] BAGIAN 4: LAPORAN HARIAN & BULANAN DENGAN GAMBAR   -->
+        <!-- ========================================================= -->
+        <section id="sec-bulanan" class="space-y-4 hidden">
+            <div class="flex flex-wrap justify-between items-center gap-3">
+                <div>
+                    <h2 class="text-base sm:text-lg font-extrabold text-emerald-400 uppercase">
+                        <i class="fa-solid fa-calendar-check mr-1"></i> Laporan Jenis Pekerjaan Harian & Bulanan + Dokumentasi Gambar
+                    </h2>
+                    <p class="text-xs text-slate-400">Rekapitulasi progres kerja harian dalam periode bulan berjalan.</p>
+                </div>
+                <div class="no-print flex items-center gap-2">
+                    <select id="pilih-bulan-laporan" class="bg-slate-950 border border-slate-700 text-xs text-white rounded-lg p-2">
+                        <option value="2026-11">November 2026</option>
+                        <option value="2026-12">Desember 2026</option>
+                    </select>
+                    <button onclick="window.cetakBagianSaja('BULANAN')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs px-3.5 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-print"></i> Cetak Laporan Bulanan
+                    </button>
+                </div>
+            </div>
+
+            <div class="print-box bg-slate-800/90 border border-slate-700 rounded-xl overflow-x-auto shadow-lg">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <thead>
+                        <tr class="bg-slate-950 text-slate-300 border-b border-slate-700 uppercase text-[11px]">
+                            <th class="p-3 text-center">Tanggal</th>
+                            <th class="p-3 text-center">Foto / Gambar</th>
+                            <th class="p-3">Jenis Pekerjaan & Keterangan</th>
+                            <th class="p-3">Tim Pelaksana</th>
+                            <th class="p-3 text-center">Tipe & Durasi</th>
+                            <th class="p-3 text-right">Upah Pekerja</th>
+                            <th class="p-3 text-right">Biaya Bahan</th>
+                            <th class="p-3 text-right">Total Biaya</th>
+                            <th class="p-3 text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabel-laporan-bulanan" class="divide-y divide-slate-700/70">
+                        <!-- Dirender Otomatis oleh JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
         <!-- ========================================================= -->
         <!-- [05] BAGIAN 2: BIAYA BAHAN MATERIAL & AKUNTANSI KAS       -->
         <!-- ========================================================= -->
@@ -635,10 +682,160 @@
         };
 
         // Navigasi Tab & Cetak PDF
+        // Data Contoh Harian / Bulanan (Bisa disinkronkan dengan input pekerja Anda)
+        let dataHarianBulanan = [
+            {
+                id: "HAR-1",
+                tanggal: "2026-11-01",
+                jenisKerja: "Inspeksi & Diagnostik Sistem Hidrolik TZ 60",
+                tim: "Ahmad & Tim Mekanik",
+                tipe: "HARIAN",
+                durasi: "1 Hari (2 Orang)",
+                upah: 350000,
+                bahan: 0,
+                status: "SUDAH DIBAYAR",
+                foto: ""
+            },
+            {
+                id: "HAR-2",
+                tanggal: "2026-11-05",
+                jenisKerja: "Servis Hidrolik & Ganti Seal Boom TZ 60",
+                tim: "Ahmad & Tim Mekanik",
+                tipe: "HARIAN",
+                durasi: "5 Hari (2 Orang)",
+                upah: 1750000,
+                bahan: 950000,
+                status: "BELUM DIBAYAR",
+                foto: ""
+            },
+            {
+                id: "HAR-3",
+                tanggal: "2026-11-10",
+                jenisKerja: "Rekondisi & Pengecatan Ulang Bucket TZ 80",
+                tim: "Rombongan Hendra",
+                tipe: "BORONGAN",
+                durasi: "4 Hari (Paket)",
+                upah: 2400000,
+                bahan: 900000,
+                status: "SUDAH DIBAYAR",
+                foto: ""
+            },
+            {
+                id: "HAR-4",
+                tanggal: "2026-11-15",
+                jenisKerja: "Perbaikan Elektrikal & Panel Display TZ 60",
+                tim: "Ahmad & Tim Mekanik",
+                tipe: "HARIAN",
+                durasi: "2 Hari (2 Orang)",
+                upah: 700000,
+                bahan: 450000,
+                status: "BELUM DIBAYAR",
+                foto: ""
+            }
+        ];
+
+        // Perbarui Fungsi Render Semua untuk Memasukkan Tabel Bulanan
+        const renderTabelBulanan = () => {
+            const tbodyBulanan = document.getElementById("tabel-laporan-bulanan");
+            if (!tbodyBulanan) return;
+            let htmlB = "";
+            let totalU = 0, totalB = 0;
+
+            dataHarianBulanan.forEach(item => {
+                const totalItem = Number(item.upah) + Number(item.bahan);
+                totalU += Number(item.upah);
+                totalB += Number(item.bahan);
+
+                const tampilFotoB = item.foto
+                    ? `<img src="${item.foto}" class="w-14 h-10 object-cover rounded border border-slate-600 mx-auto">`
+                    : `<div class="w-14 h-10 rounded bg-slate-900 border border-slate-700 flex items-center justify-center text-[9px] text-slate-400 mx-auto">Tanpa Foto</div>`;
+
+                const badgeStatusB = item.status === "SUDAH DIBAYAR"
+                    ? `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-bold">LUNAS</span>`
+                    : `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded text-[10px] font-bold">BELUM</span>`;
+
+                htmlB += `
+                <tr class="hover:bg-slate-800/60">
+                    <td class="p-3 text-center text-slate-300">${item.tanggal}</td>
+                    <td class="p-2 text-center">${tampilFotoB}</td>
+                    <td class="p-3 font-bold text-white">${item.jenisKerja}</td>
+                    <td class="p-3 text-slate-300">${item.tim}</td>
+                    <td class="p-3 text-center text-xs">${item.durasi}</td>
+                    <td class="p-3 text-right font-bold text-amber-400">${formatRp(item.upah)}</td>
+                    <td class="p-3 text-right font-bold text-sky-400">${formatRp(item.bahan)}</td>
+                    <td class="p-3 text-right font-extrabold text-emerald-400">${formatRp(totalItem)}</td>
+                    <td class="p-3 text-center">${badgeStatusB}</td>
+                </tr>`;
+            });
+            tbodyBulanan.innerHTML = htmlB;
+        };
+
+        // Modifikasi Fungsi Pindah Tab
         window.pindahTab = function(tab) {
             const secPekerja = document.getElementById("sec-pekerja");
             const secBahan = document.getElementById("sec-bahan");
-            const daftar = ["PEKERJA", "BAHAN", "SEMUA"];
+            const secBulanan = document.getElementById("sec-bulanan");
+            const daftar = ["PEKERJA", "BAHAN", "SEMUA", "BULANAN"];
+
+            daftar.forEach(t => {
+                const btn = document.getElementById("tab-btn-" + t);
+                if (btn) {
+                    btn.className = (t === tab)
+                        ? "px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold bg-amber-500 text-slate-950 cursor-pointer"
+                        : "px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer";
+                }
+            });
+
+            if (tab === "PEKERJA") {
+                secPekerja.classList.remove("hidden");
+                secBahan.classList.add("hidden");
+                secBulanan.classList.add("hidden");
+            } else if (tab === "BAHAN") {
+                secPekerja.classList.add("hidden");
+                secBahan.classList.remove("hidden");
+                secBulanan.classList.add("hidden");
+            } else if (tab === "BULANAN") {
+                secPekerja.classList.add("hidden");
+                secBahan.classList.add("hidden");
+                secBulanan.classList.remove("hidden");
+                renderTabelBulanan();
+            } else {
+                secPekerja.classList.remove("hidden");
+                secBahan.classList.remove("hidden");
+                secBulanan.classList.remove("hidden");
+                renderTabelBulanan();
+            }
+        };
+
+        // Modifikasi Fungsi Cetak Bagian
+        window.cetakBagianSaja = function(bagian) {
+            const ringkasan = document.getElementById("sec-ringkasan");
+            const secPekerja = document.getElementById("sec-pekerja");
+            const secBahan = document.getElementById("sec-bahan");
+            const secBulanan = document.getElementById("sec-bulanan");
+
+            if (ringkasan) ringkasan.classList.add("hidden");
+
+            if (bagian === "PEKERJA") {
+                secPekerja.classList.remove("hidden");
+                secBahan.classList.add("hidden");
+                secBulanan.classList.add("hidden");
+            } else if (bagian === "BAHAN") {
+                secPekerja.classList.add("hidden");
+                secBahan.classList.remove("hidden");
+                secBulanan.classList.add("hidden");
+            } else if (bagian === "BULANAN") {
+                secPekerja.classList.add("hidden");
+                secBahan.classList.add("hidden");
+                secBulanan.classList.remove("hidden");
+                renderTabelBulanan();
+            }
+
+            setTimeout(() => {
+                window.print();
+                if (ringkasan) ringkasan.classList.remove("hidden");
+            }, 300);
+        };
 
             daftar.forEach(t => {
                 const btn = document.getElementById("tab-btn-" + t);
