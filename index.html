@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Manajemen Pekerja & Akuntansi Proyek</title>
+    <title>Sistem Laporan Pekerjaan Workshop - ANTRACK TZCO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -23,210 +23,102 @@
 <body class="bg-slate-900 text-slate-100 font-sans pb-24 md:pb-10">
 
     <!-- ========================================================= -->
-    <!-- [01] HEADER ATAS & TOMBOL CETAK PDF                       -->
+    <!-- [01] HEADER UTAMA & TOMBOL LAPORAN                        -->
     <!-- ========================================================= -->
     <header class="no-print bg-slate-950 border-b border-amber-500/40 sticky top-0 z-40 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-black text-xl">
-                    <i class="fa-solid fa-helmet-safety"></i>
+                    <i class="fa-solid fa-wrench"></i>
                 </div>
                 <div>
-                    <h1 class="font-extrabold text-base sm:text-lg text-white leading-tight">SISTEM MANAJEMEN PROYEK & AKUNTANSI</h1>
-                    <p class="text-xs text-amber-400">Mode Input HP & Monitoring PC • Dilengkapi Proteksi PIN 4 Digit</p>
+                    <h1 class="font-extrabold text-base sm:text-lg text-white leading-tight">MANAJEMEN PEKERJAAN WORKSHOP TZCO</h1>
+                    <p class="text-xs text-amber-400">Kontrol Tugas Perbaikan & Aksesoris • Proteksi PIN 4 Digit</p>
                 </div>
             </div>
 
-            <!-- Menu Navigasi Desktop & Tombol PDF -->
+            <!-- Tombol Aksi Utama -->
             <div class="flex items-center gap-2">
                 <button onclick="window.cetakLaporanPDF()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm px-3.5 py-2 rounded-lg flex items-center gap-1.5 shadow cursor-pointer">
-                    <i class="fa-solid fa-file-pdf"></i> Cetak / Kirim PDF
+                    <i class="fa-solid fa-file-pdf"></i> Cetak / Print Laporan
                 </button>
-                <button onclick="window.exportBackupData()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 font-bold text-xs px-3 py-2 rounded-lg flex items-center gap-1 cursor-pointer" title="Simpan File Data untuk Pindah HP ke PC">
+                <button onclick="window.exportBackupData()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 font-bold text-xs px-3 py-2 rounded-lg flex items-center gap-1 cursor-pointer" title="Backup Data">
                     <i class="fa-solid fa-download text-amber-400"></i> Backup
                 </button>
-                <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 font-bold text-xs px-3 py-2 rounded-lg flex items-center gap-1 cursor-pointer" title="Muat File Data dari HP/PC">
-                    <i class="fa-solid fa-upload text-emerald-400"></i> Muat Data
-                    <input type="file" accept=".json" onchange="window.importBackupData(event)" class="hidden">
-                </label>
             </div>
         </div>
     </header>
 
     <!-- ========================================================= -->
-    <!-- [02] KOP SURAT KHUSUS SAAT PRINT / EXPORT PDF             -->
+    <!-- [02] KOP SURAT KHUSUS SAAT PRINT / PDF                    -->
     <!-- ========================================================= -->
     <div class="print-only max-w-7xl mx-auto px-6 pt-4 pb-4 border-b-2 border-black mb-4">
         <div class="flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-black uppercase">LAPORAN MANAJEMEN PEKERJAAN, UPAH & AKUNTANSI KEUANGAN</h1>
-                <p class="text-xs">Rekapitulasi Resmi Biaya Tenaga Kerja, Kasbon, Bahan Material & Kas Proyek</p>
+                <h1 class="text-xl font-black uppercase">LAPORAN PEKERJAAN WORKSHOP & BIAYA PROYEK</h1>
+                <p class="text-xs">PT. ANTRACK TZCO PALEMBANG - Diajukan Kepada Manajemen Keuangan</p>
             </div>
             <div class="text-right text-xs">
                 <p><strong>Tanggal Cetak:</strong> <span id="tgl-cetak-pdf"></span></p>
-                <p><strong>Status Dokumen:</strong> Terverifikasi Sistem</p>
+                <p><strong>Status:</strong> Dokumen Resmi Workshop</p>
             </div>
         </div>
     </div>
 
     <!-- ========================================================= -->
-    <!-- [03] RINGKASAN KEUANGAN / AKUNTANSI (DASHBOARD)           -->
+    <!-- [03] RINGKASAN STATUS TUGAS WORKSHOP                      -->
     <!-- ========================================================= -->
     <main class="max-w-7xl mx-auto px-4 pt-5 space-y-6">
 
-        <section id="sec-ringkasan" class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <section id="sec-ringkasan" class="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <div class="print-box bg-slate-800 border border-slate-700 p-3.5 rounded-xl">
-                <span class="text-[11px] text-slate-400 uppercase font-bold block">1. Total Anggaran Masuk</span>
-                <span id="kpi-pemasukan" class="text-base sm:text-lg font-black text-emerald-400">Rp0</span>
-            </div>
-            <div class="print-box bg-slate-800 border border-slate-700 p-3.5 rounded-xl">
-                <span class="text-[11px] text-slate-400 uppercase font-bold block">2. Total Upah Pekerja</span>
-                <span id="kpi-upah" class="text-base sm:text-lg font-black text-amber-400">Rp0</span>
+                <span class="text-[11px] text-slate-400 uppercase font-bold block">Total Pekerjaan Workshop</span>
+                <span id="kpi-total" class="text-lg font-black text-white">0 Tugas</span>
             </div>
             <div class="print-box bg-slate-800 border border-slate-700 p-3.5 rounded-xl">
-                <span class="text-[11px] text-slate-400 uppercase font-bold block">3. Total Hutang/Kasbon</span>
-                <span id="kpi-hutang" class="text-base sm:text-lg font-black text-rose-400">Rp0</span>
+                <span class="text-[11px] text-slate-400 uppercase font-bold block">Belum Dikerjakan</span>
+                <span id="kpi-belum" class="text-lg font-black text-amber-400">0 Tugas</span>
             </div>
             <div class="print-box bg-slate-800 border border-slate-700 p-3.5 rounded-xl">
-                <span class="text-[11px] text-slate-400 uppercase font-bold block">4. Biaya Bahan & Alat</span>
-                <span id="kpi-bahan" class="text-base sm:text-lg font-black text-sky-400">Rp0</span>
+                <span class="text-[11px] text-slate-400 uppercase font-bold block">Sudah Diselesaikan</span>
+                <span id="kpi-selesai" class="text-lg font-black text-emerald-400">0 Tugas</span>
             </div>
-            <div class="print-box col-span-2 lg:col-span-1 bg-slate-950 border-2 border-amber-500/60 p-3.5 rounded-xl">
-                <span class="text-[11px] text-amber-400 uppercase font-bold block">5. Sisa Saldo Kas Bersih</span>
-                <span id="kpi-saldo" class="text-base sm:text-lg font-black text-white">Rp0</span>
-            </div>
-        </section>
-
-        <!-- TOMBOL TAB MENU (TAMPIL DI PC & HP) -->
-        <div class="no-print flex flex-wrap gap-2 border-b border-slate-800 pb-3">
-            <button onclick="window.pindahTab('PEKERJA')" id="tab-btn-PEKERJA" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold bg-amber-500 text-slate-950 cursor-pointer">
-                <i class="fa-solid fa-users-gear mr-1"></i> 1. Data Pekerja & Upah
-            </button>
-            <button onclick="window.pindahTab('BAHAN')" id="tab-btn-BAHAN" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">
-                <i class="fa-solid fa-boxes-stacked mr-1"></i> 2. Bahan & Kas Masuk
-            </button>
-            <button onclick="window.pindahTab('SEMUA')" id="tab-btn-SEMUA" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">
-                <i class="fa-solid fa-print mr-1"></i> 3. Laporan Lengkap
-            </button>
-            <button onclick="window.pindahTab('BULANAN')" id="tab-btn-BULANAN" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer">
-                <i class="fa-solid fa-calendar-days mr-1"></i> 4. Laporan Bulanan (+ Gambar)
-            </button>
-        </div>
-
-        <!-- ========================================================= -->
-        <!-- [04] BAGIAN 1: MANAJEMEN PEKERJA, UPAH, BORONGAN & HUTANG -->
-        <!-- ========================================================= -->
-        <section id="sec-pekerja" class="space-y-4">
-            <div class="flex flex-wrap justify-between items-center gap-3">
-                <h2 class="text-base sm:text-lg font-extrabold text-amber-400 uppercase">
-                    <i class="fa-solid fa-user-check mr-1"></i> Daftar Pekerja, Jenis Pekerjaan, Kehadiran & Hutang
-                </h2>
-                <div class="no-print flex flex-wrap gap-2">
-                    <button onclick="window.cetakBagianSaja('PEKERJA')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-print"></i> Cetak Pekerja Saja
-                    </button>
-                    <button onclick="window.bukaModalPekerja()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-plus"></i> + Input Pekerja (PIN)
-                    </button>
-                </div>
-            </div>
-
-            <div class="print-box bg-slate-800/90 border border-slate-700 rounded-xl overflow-x-auto shadow-lg">
-                <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                    <thead>
-                        <tr class="bg-slate-950 text-slate-300 border-b border-slate-700 uppercase text-[11px]">
-                            <th class="p-3 text-center">Foto Kerja</th>
-                            <th class="p-3">Nama / Tim & Jenis Pekerjaan</th>
-                            <th class="p-3 text-center">Tipe & Jml Orang</th>
-                            <th class="p-3 text-center">Lama / Hadir</th>
-                            <th class="p-3 text-right">Upah Kotor</th>
-                            <th class="p-3 text-right">Hutang / Kasbon</th>
-                            <th class="p-3 text-right">Sisa Diterima</th>
-                            <th class="p-3 text-center">Status Bayar</th>
-                            <th class="p-3 text-center no-print">Aksi (PIN)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabel-pekerja" class="divide-y divide-slate-700/70">
-                        <!-- Dirender Otomatis oleh JS -->
-                    </tbody>
-                </table>
+            <div class="print-box bg-slate-800 border border-slate-700 p-3.5 rounded-xl">
+                <span class="text-[11px] text-slate-400 uppercase font-bold block">Total Akumulasi Biaya</span>
+                <span id="kpi-biaya" class="text-lg font-black text-sky-400">Rp0</span>
             </div>
         </section>
 
         <!-- ========================================================= -->
-        <!-- [04.B] BAGIAN 4: LAPORAN HARIAN & BULANAN DENGAN GAMBAR   -->
+        <!-- [04] TABEL UTAMA LAPORAN PEKERJAAN WORKSHOP               -->
         <!-- ========================================================= -->
-        <section id="sec-bulanan" class="space-y-4 hidden">
+        <section class="space-y-4">
             <div class="flex flex-wrap justify-between items-center gap-3">
                 <div>
-                    <h2 class="text-base sm:text-lg font-extrabold text-emerald-400 uppercase">
-                        <i class="fa-solid fa-calendar-check mr-1"></i> Laporan Jenis Pekerjaan Harian & Bulanan + Gambar
+                    <h2 class="text-base sm:text-lg font-extrabold text-amber-400 uppercase">
+                        <i class="fa-solid fa-clipboard-list mr-1"></i> Daftar Pekerjaan & Status Workshop
                     </h2>
-                    <p class="text-xs text-slate-400">Rekapitulasi progres kerja harian dalam periode bulan berjalan.</p>
+                    <p class="text-xs text-slate-400">Perbaikan unit alat berat, pembuatan aksesoris, perorangan atau kelompok.</p>
                 </div>
-                <div class="no-print flex items-center gap-2">
-                    <select id="pilih-bulan-laporan" onchange="window.renderTabelBulanan()" class="bg-slate-950 border border-slate-700 text-xs text-white rounded-lg p-2">
-                        <option value="2026-11">November 2026</option>
-                        <option value="2026-12">Desember 2026</option>
-                        <option value="ALL">Semua Bulan</option>
-                    </select>
-                    <button onclick="window.cetakBagianSaja('BULANAN')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs px-3.5 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-print"></i> Cetak Bulanan Saja
-                    </button>
-                </div>
+                <button onclick="window.bukaModalPekerjaan()" class="no-print bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2.5 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-plus"></i> + Tambah Pekerjaan Baru (PIN)
+                </button>
             </div>
 
             <div class="print-box bg-slate-800/90 border border-slate-700 rounded-xl overflow-x-auto shadow-lg">
                 <table class="w-full text-left border-collapse text-xs sm:text-sm">
                     <thead>
                         <tr class="bg-slate-950 text-slate-300 border-b border-slate-700 uppercase text-[11px]">
-                            <th class="p-3 text-center">Tgl / Kategori Waktu</th>
-                            <th class="p-3 text-center">Foto / Gambar</th>
-                            <th class="p-3">Jenis Pekerjaan & Keterangan</th>
-                            <th class="p-3">Tim Pelaksana</th>
-                            <th class="p-3 text-center">Tipe & Durasi</th>
-                            <th class="p-3 text-right">Upah Pekerja</th>
-                            <th class="p-3 text-right">Status Upah</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabel-laporan-bulanan" class="divide-y divide-slate-700/70">
-                        <!-- Dirender Otomatis oleh JS -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-        
-        <!-- ========================================================= -->
-        <!-- [05] BAGIAN 2: BIAYA BAHAN MATERIAL & AKUNTANSI KAS       -->
-        <!-- ========================================================= -->
-        <section id="sec-bahan" class="space-y-4 hidden">
-            <div class="flex flex-wrap justify-between items-center gap-3">
-                <h2 class="text-base sm:text-lg font-extrabold text-sky-400 uppercase">
-                    <i class="fa-solid fa-receipt mr-1"></i> Pembukuan Biaya Bahan Material & Dana Masuk
-                </h2>
-                <div class="no-print flex flex-wrap gap-2">
-                    <button onclick="window.cetakBagianSaja('BAHAN')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-print"></i> Cetak Bahan Saja
-                    </button>
-                    <button onclick="window.bukaModalKeuangan()" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-plus"></i> + Input Bahan / Kas (PIN)
-                    </button>
-                </div>
-            </div>
-
-            <div class="print-box bg-slate-800/90 border border-slate-700 rounded-xl overflow-x-auto shadow-lg">
-                <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                    <thead>
-                        <tr class="bg-slate-950 text-slate-300 border-b border-slate-700 uppercase text-[11px]">
-                            <th class="p-3">Tanggal</th>
-                            <th class="p-3">Kategori</th>
-                            <th class="p-3">Uraian Bahan / Pekerjaan / Kas</th>
-                            <th class="p-3 text-center">Qty / Satuan</th>
-                            <th class="p-3 text-right">Nominal (Rp)</th>
+                            <th class="p-3 text-center">Tanggal</th>
+                            <th class="p-3 text-center">Foto Dok.</th>
+                            <th class="p-3">Jenis Pekerjaan / Perbaikan</th>
+                            <th class="p-3">Pelaksana (Individu / Kelompok)</th>
+                            <th class="p-3 text-right">Estimasi / Biaya (Rp)</th>
+                            <th class="p-3 text-center">Status Laporan</th>
                             <th class="p-3 text-center no-print">Aksi (PIN)</th>
                         </tr>
                     </thead>
-                    <tbody id="tabel-keuangan" class="divide-y divide-slate-700/70">
+                    <tbody id="tabel-pekerjaan-workshop" class="divide-y divide-slate-700/70">
                         <!-- Dirender Otomatis oleh JS -->
                     </tbody>
                 </table>
@@ -237,11 +129,11 @@
         <div class="print-only pt-10">
             <div class="grid grid-cols-2 gap-8 text-center text-xs">
                 <div>
-                    <p class="mb-16">Dibuat & Dilaporkan Oleh,<br><strong>Koordinator Lapangan / Admin</strong></p>
+                    <p class="mb-16">Dibuat Oleh,<br><strong>Kepala / Koordinator Workshop</strong></p>
                     <p class="font-bold underline">( ................................................. )</p>
                 </div>
                 <div>
-                    <p class="mb-16">Diperiksa & Disetujui Oleh,<br><strong>Pimpinan Manajemen Perusahaan</strong></p>
+                    <p class="mb-16">Disetujui Oleh,<br><strong>Manajemen Keuangan / Direksi</strong></p>
                     <p class="font-bold underline">( ................................................. )</p>
                 </div>
             </div>
@@ -250,622 +142,247 @@
     </main>
 
     <!-- ========================================================= -->
-    <!-- [06] MODAL INPUT / EDIT PEKERJA (DENGAN PROTEKSI PIN)     -->
+    <!-- [05] MODAL INPUT / EDIT PEKERJAAN WORKSHOP (PIN 4 DIGIT)  -->
     <!-- ========================================================= -->
-    <div id="modal-form-pekerja" class="no-print fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto">
+    <div id="modal-form-pekerjaan" class="no-print fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg p-5 shadow-2xl my-8">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-                <h3 id="judul-modal-pekerja" class="font-extrabold text-amber-400 text-base">Input Data Pekerja & Upah</h3>
-                <button onclick="window.tutupModal('modal-form-pekerja')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <h3 id="judul-modal" class="font-extrabold text-amber-400 text-base">Input Laporan Pekerjaan Workshop</h3>
+                <button onclick="window.tutupModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <input type="hidden" id="inp-id-pekerja">
+            <input type="hidden" id="inp-id">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Nama Pekerja / Kepala Grup*</label>
-                    <input type="text" id="inp-nama" placeholder="Misal: Budi / Tim Las A" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+                    <label class="block text-slate-400 mb-1 font-bold">Tanggal Pelaporan*</label>
+                    <input type="date" id="inp-tanggal" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Jenis Pekerjaan Harian*</label>
-                    <input type="text" id="inp-jenis-kerja" placeholder="Misal: Bongkar Mesin / Las Bucket" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Tanggal Kerja*</label>
-                    <input type="date" id="inp-tanggal-kerja" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Sistem Upah*</label>
-                    <select id="inp-tipe-upah" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                        <option value="HARIAN">Upah Harian (Per Hari × Jml Pekerja)</option>
-                        <option value="BORONGAN">Borongan (Total Paket Borongan)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Jumlah Pekerja (Orang)*</label>
-                    <input type="number" id="inp-jml-orang" value="1" min="1" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Lama Kerja / Jml Hari Hadir*</label>
-                    <input type="number" id="inp-hari-hadir" value="1" min="0.5" step="0.5" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Tarif Harian / Nilai Borongan (Rp)*</label>
-                    <input type="number" id="inp-tarif" placeholder="Contoh: 150000" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Nominal Hutang / Kasbon (Rp)</label>
-                    <input type="number" id="inp-hutang" value="0" min="0" class="w-full bg-slate-950 border border-rose-500/50 rounded-lg p-2.5 text-white">
-                </div>
-                <div>
-                   <label class="block text-slate-400 mb-1 font-bold">Status Pembayaran Upah</label>
-                    <select id="inp-status-bayar" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                        <option value="BELUM DIBAYAR">BELUM DIBAYAR</option>
-                        <option value="SUDAH DIBAYAR">SUDAH DIBAYAR (LUNAS)</option>
+                    <label class="block text-slate-400 mb-1 font-bold">Status Pengerjaan*</label>
+                    <select id="inp-status" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+                        <option value="BELUM DIKERJAKAN">Belum Dikerjakan</option>
+                        <option value="DALAM PROSES">Dalam Proses Pengerjaan</option>
+                        <option value="SUDAH DISLESAIKAN">Sudah Diselesaikan</option>
                     </select>
                 </div>
                 <div class="sm:col-span-2">
-                    <label class="block text-slate-400 mb-1 font-bold"><i class="fa-solid fa-camera text-amber-400 mr-1"></i> Upload Foto / Bukti Pekerjaan (Bisa Langsung Kamera HP)</label>
-                    <input type="file" id="inp-foto-kerja" accept="image/*" onchange="window.prosesFotoKerja(event)" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+                    <label class="block text-slate-400 mb-1 font-bold">Jenis Pekerjaan / Perbaikan (Misal: Perbaikan Hidrolik TZ 60 / Pembuatan Aksesoris)*</label>
+                    <input type="text" id="inp-jenis" placeholder="Uraikan detail pekerjaan..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">Pelaksana (Individu / Kelompok)*</label>
+                    <input type="text" id="inp-pelaksana" placeholder="Misal: Ahmad / Tim Mekanik A" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">Total Biaya / Upah / Material (Rp)*</label>
+                    <input type="number" id="inp-biaya" placeholder="Contoh: 1500000" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-slate-400 mb-1 font-bold"><i class="fa-solid fa-camera text-amber-400 mr-1"></i> Foto Dokumentasi / Bukti (Kamera HP / File)</label>
+                    <input type="file" id="inp-file-foto" accept="image/*" onchange="window.prosesFoto(event)" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
                     <input type="hidden" id="inp-data-foto">
                 </div>
                 <div class="sm:col-span-2 bg-slate-950 border border-amber-500/50 p-3 rounded-xl mt-1">
-                    <label class="block text-amber-400 mb-1 font-extrabold"><i class="fa-solid fa-lock mr-1"></i> Masukkan Sandi PIN 4 Digit untuk Menyimpan*</label>
-                    <input type="password" id="pin-simpan-pekerja" maxlength="4" placeholder="Ketik 4 digit PIN (Default: 1234)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-center text-base font-black tracking-widest text-amber-400">
+                    <label class="block text-amber-400 mb-1 font-extrabold"><i class="fa-solid fa-lock mr-1"></i> Sandi PIN 4 Digit untuk Menyimpan*</label>
+                    <input type="password" id="pin-admin" maxlength="4" placeholder="Ketik PIN (Default: 1234)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-center text-base font-black tracking-widest text-amber-400">
                 </div>
             </div>
 
             <div class="flex justify-end gap-2 mt-5">
-                <button onclick="window.tutupModal('modal-form-pekerja')" class="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold">Batal</button>
-                <button onclick="window.simpanDataPekerja()" class="px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold cursor-pointer">Verifikasi PIN & Simpan</button>
+                <button onclick="window.tutupModal()" class="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold">Batal</button>
+                <button onclick="window.simpanData()" class="px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold cursor-pointer">Verifikasi PIN & Simpan</button>
             </div>
         </div>
     </div>
 
     <!-- ========================================================= -->
-    <!-- [07] MODAL INPUT / EDIT BAHAN & AKUNTANSI KAS (PIN)       -->
-    <!-- ========================================================= -->
-    <div id="modal-form-keuangan" class="no-print fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md p-5 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-                <h3 id="judul-modal-keuangan" class="font-extrabold text-sky-400 text-base">Input Biaya Bahan / Kas Masuk</h3>
-                <button onclick="window.tutupModal('modal-form-keuangan')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-
-            <input type="hidden" id="inp-id-keuangan">
-            <div class="space-y-3 text-xs">
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">Tanggal*</label>
-                        <input type="date" id="inp-tgl-kas" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">Jenis Transaksi*</label>
-                        <select id="inp-jenis-kas" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                            <option value="BIAYA_BAHAN">Pengeluaran Bahan / Alat</option>
-                            <option value="DANA_MASUK">Pemasukan Dana / Termin</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Nama Bahan / Uraian Transaksi*</label>
-                    <input type="text" id="inp-uraian-kas" placeholder="Misal: Beli Kawat Las 5 Kotak & Oli Hidrolik" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">Qty & Satuan</label>
-                        <input type="text" id="inp-qty-kas" placeholder="Misal: 5 Dus / 1 Paket" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">Total Nominal (Rp)*</label>
-                        <input type="number" id="inp-nominal-kas" placeholder="Contoh: 750000" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                    </div>
-                </div>
-                <div class="bg-slate-950 border border-amber-500/50 p-3 rounded-xl">
-                    <label class="block text-amber-400 mb-1 font-extrabold"><i class="fa-solid fa-lock mr-1"></i> Sandi PIN 4 Digit*</label>
-                    <input type="password" id="pin-simpan-keuangan" maxlength="4" placeholder="Ketik 4 digit PIN (Default: 1234)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-center text-base font-black tracking-widest text-amber-400">
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-2 mt-5">
-                <button onclick="window.tutupModal('modal-form-keuangan')" class="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold">Batal</button>
-                <button onclick="window.simpanDataKeuangan()" class="px-5 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold cursor-pointer">Verifikasi PIN & Simpan</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- [08] ENGINE JAVASCRIPT & OTORISASI PIN 4 DIGIT            -->
+    <!-- [06] ENGINE JAVASCRIPT & DATABASE                         -->
     <!-- ========================================================= -->
     <script>
-        // ---> KONFIGURASI SANDI PIN 4 DIGIT (Silakan ganti angka 1234 sesuai keinginan Anda)
-        const SANDI_PIN_ADMIN = "1234";
+        const PIN_KUNCI = "1234"; // Anda dapat mengganti PIN ini kapan saja
 
-        // Data Awal (Tersimpan di Memori Browser / LocalStorage)
-        let dataPekerja = JSON.parse(localStorage.getItem("DB_PEKERJA_PROYEK")) || [
+        // Database Contoh Pekerjaan Workshop
+        let dataWorkshop = JSON.parse(localStorage.getItem("DB_WORKSHOP_TZCO")) || [
             {
-                id: "PKJ-1",
-                tanggal: "2026-11-01",
-                nama: "Ahmad & Tim Mekanik",
-                jenisKerja: "Servis Hidrolik & Ganti Seal Boom",
-                tipeUpah: "HARIAN",
-                jmlOrang: 2,
-                hariHadir: 5,
-                tarif: 175000,
-                hutang: 250000,
-                statusBayar: "BELUM DIBAYAR",
-                foto: ""
-            },
-            {
-                id: "PKJ-2",
-                tanggal: "2026-11-05",
-                nama: "Rombongan Hendra (Borongan)",
-                jenisKerja: "Rekondisi & Pengecatan Ulang Bucket",
-                tipeUpah: "BORONGAN",
-                jmlOrang: 3,
-                hariHadir: 4,
-                tarif: 2400000,
-                hutang: 0,
-                statusBayar: "SUDAH DIBAYAR",
-                foto: ""
-            }
-        ];
-
-        let dataKeuangan = JSON.parse(localStorage.getItem("DB_KEUANGAN_PROYEK")) || [
-            {
-                id: "KAS-1",
-                tanggal: "2026-11-15",
-                jenis: "DANA_MASUK",
-                uraian: "Pencairan Kas Operasional Workshop Tahap 1",
-                qty: "1 Termin",
-                nominal: 10000000
-            },
-            {
-                id: "KAS-2",
+                id: "WS-1",
                 tanggal: "2026-11-16",
-                jenis: "BIAYA_BAHAN",
-                uraian: "Pembelian Seal Kit Hidrolik, Cat Duco & Kawat Las",
-                qty: "1 Paket",
-                nominal: 1850000
+                jenis: "Perbaikan Silinder Hidrolik Boom Excavator TZ 60",
+                pelaksana: "Ahmad & Tim Mekanik (Kelompok)",
+                biaya: 1850000,
+                status: "SUDAH DISLESAIKAN",
+                foto: ""
+            },
+            {
+                id: "WS-2",
+                tanggal: "2026-11-17",
+                jenis: "Pembuatan Asesoris Pelindung Bucket Tambahan",
+                pelaksana: "Hendra (Individu)",
+                biaya: 750000,
+                status: "DALAM PROSES",
+                foto: ""
+            },
+            {
+                id: "WS-3",
+                tanggal: "2026-11-18",
+                jenis: "Penggantian Filter Solar & Servis Rutin TZ 80",
+                pelaksana: "Rian & Budi (Kelompok)",
+                biaya: 500000,
+                status: "BELUM DIKERJAKAN",
+                foto: ""
             }
         ];
 
         const formatRp = (angka) => "Rp" + Number(angka || 0).toLocaleString("id-ID");
 
-        // Fungsi Cek PIN 4 Digit untuk Edit & Hapus
-        window.verifikasiPinPopup = function(pesanAksi) {
-            const inputPin = prompt(`🔒 KEAMANAN SISTEM\nMasukkan Sandi PIN 4 Digit untuk ${pesanAksi}:`);
-            if (inputPin === null) return false;
-            if (inputPin === SANDI_PIN_ADMIN) return true;
-            alert("❌ SANDI PIN SALAH! Akses perubahan data ditolak.");
+        window.cekPin = function(aksi) {
+            const pin = prompt(`🔒 KEAMANAN SISTEM\nMasukkan Sandi PIN 4 Digit untuk ${aksi}:`);
+            if (pin === null) return false;
+            if (pin === PIN_KUNCI) return true;
+            alert("❌ SANDI PIN SALAH! Akses ditolak.");
             return false;
         };
 
-        // Hitung Upah Kotor Pekerja
-        const hitungUpahKotor = (item) => {
-            if (item.tipeUpah === "HARIAN") {
-                return Number(item.jmlOrang) * Number(item.hariHadir) * Number(item.tarif);
-            } else {
-                return Number(item.tarif);
-            }
-        };
+        window.renderTabel = function() {
+            localStorage.setItem("DB_WORKSHOP_TZCO", JSON.stringify(dataWorkshop));
 
-        // Render Seluruh Tabel & Ringkasan Akuntansi
-        window.renderSemua = function() {
-            localStorage.setItem("DB_PEKERJA_PROYEK", JSON.stringify(dataPekerja));
-            localStorage.setItem("DB_KEUANGAN_PROYEK", JSON.stringify(dataKeuangan));
+            const tbody = document.getElementById("tabel-pekerjaan-workshop");
+            let html = "";
+            let totalBiayaSemua = 0;
+            let jmlBelum = 0;
+            let jmlSelesai = 0;
 
-            let totalUpahKotor = 0;
-            let totalHutangPekerja = 0;
+            dataWorkshop.forEach(item => {
+                totalBiayaSemua += Number(item.biaya);
+                if (item.status === "BELUM DIKERJAKAN") jmlBelum++;
+                if (item.status === "SUDAH DISLESAIKAN") jmlSelesai++;
 
-            const tbodyPekerja = document.getElementById("tabel-pekerja");
-            let htmlPekerja = "";
+                let badge = "";
+                if (item.status === "BELUM DIKERJAKAN") {
+                    badge = `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded text-[10px] font-extrabold">BELUM DIKERJAKAN</span>`;
+                } else if (item.status === "DALAM PROSES") {
+                    badge = `<span class="bg-sky-500/20 text-sky-300 border border-sky-500/40 px-2.5 py-1 rounded text-[10px] font-extrabold">DALAM PROSES</span>`;
+                } else {
+                    badge = `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded text-[10px] font-extrabold">SUDAH DISLESAIKAN</span>`;
+                }
 
-            dataPekerja.forEach((p) => {
-                const upahKotor = hitungUpahKotor(p);
-                const sisaDiterima = upahKotor - Number(p.hutang);
-                totalUpahKotor += upahKotor;
-                totalHutangPekerja += Number(p.hutang);
+                const fotoTampil = item.foto
+                    ? `<img src="${item.foto}" class="w-14 h-10 object-cover rounded border border-slate-600 mx-auto">`
+                    : `<span class="text-[10px] text-slate-500 italic">Tanpa Foto</span>`;
 
-                const badgeStatus = p.statusBayar === "SUDAH DIBAYAR"
-                    ? `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-extrabold">SUDAH DIBAYAR</span>`
-                    : `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded text-[10px] font-extrabold">BELUM DIBAYAR</span>`;
-
-                const statusHutang = Number(p.hutang) > 0
-                    ? `<span class="text-rose-400 font-bold">${formatRp(p.hutang)}</span><span class="block text-[10px] text-rose-300">Ada Kasbon</span>`
-                    : `<span class="text-slate-500">Rp0 (Tidak Ada)</span>`;
-
-                const tampilFoto = p.foto
-                    ? `<img src="${p.foto}" alt="Foto ${p.jenisKerja}" class="w-16 h-12 object-cover rounded border border-slate-600 mx-auto">`
-                    : `<div class="w-16 h-12 rounded bg-slate-900 border border-slate-700 flex items-center justify-center text-[10px] text-slate-400 mx-auto">Tanpa Foto</div>`;
-
-                htmlPekerja += `
+                html += `
                 <tr class="hover:bg-slate-800/60">
-                    <td class="p-2 text-center">${tampilFoto}</td>
-                    <td class="p-3">
-                        <div class="font-bold text-white">${p.nama}</div>
-                        <div class="text-xs text-amber-400">${p.jenisKerja}</div>
-                        <div class="text-[10px] text-slate-400 mt-0.5">Tgl: ${p.tanggal || "-"}</div>
-                    </td>
-                    <td class="p-3 text-center">
-                        <span class="font-bold text-slate-200">${p.tipeUpah}</span>
-                        <span class="block text-[11px] text-slate-400">${p.jmlOrang} Pekerja</span>
-                    </td>
-                    <td class="p-3 text-center font-bold">${p.hariHadir} Hari</td>
-                    <td class="p-3 text-right font-bold text-slate-200">
-                        ${formatRp(upahKotor)}
-                        <span class="block text-[10px] text-slate-400">@ ${formatRp(p.tarif)}</span>
-                    </td>
-                    <td class="p-3 text-right">${statusHutang}</td>
-                    <td class="p-3 text-right font-extrabold text-emerald-400">${formatRp(sisaDiterima)}</td>
-                    <td class="p-3 text-center">${badgeStatus}</td>
+                    <td class="p-3 text-center text-slate-300 font-bold">${item.tanggal}</td>
+                    <td class="p-2 text-center">${fotoTampil}</td>
+                    <td class="p-3 font-bold text-white">${item.jenis}</td>
+                    <td class="p-3 text-slate-300">${item.pelaksana}</td>
+                    <td class="p-3 text-right font-extrabold text-amber-400">${formatRp(item.biaya)}</td>
+                    <td class="p-3 text-center">${badge}</td>
                     <td class="p-3 text-center no-print">
                         <div class="flex justify-center gap-1.5">
-                            <button onclick="window.editPekerja('${p.id}')" class="bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-slate-200 px-2.5 py-1.5 rounded text-xs font-bold transition cursor-pointer" title="Edit dengan PIN">
+                            <button onclick="window.editData('${item.id}')" class="bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-slate-200 px-2.5 py-1.5 rounded text-xs font-bold transition cursor-pointer" title="Edit">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
-                            <button onclick="window.hapusPekerja('${p.id}')" class="bg-slate-700 hover:bg-rose-500 text-slate-200 px-2.5 py-1.5 rounded text-xs font-bold transition cursor-pointer" title="Hapus dengan PIN">
+                            <button onclick="window.hapusData('${item.id}')" class="bg-slate-700 hover:bg-rose-500 text-slate-200 px-2.5 py-1.5 rounded text-xs font-bold transition cursor-pointer" title="Hapus">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
                     </td>
                 </tr>`;
             });
-            tbodyPekerja.innerHTML = htmlPekerja || `<tr><td colspan="9" class="p-6 text-center text-slate-400">Belum ada data pekerja.</td></tr>`;
 
-            // Render Tabel Laporan Bulanan & Harian Khusus (Tabel 4)
-            window.renderTabelBulanan();
+            tbody.innerHTML = html || `<tr><td colspan="7" class="p-6 text-center text-slate-400">Belum ada laporan pekerjaan workshop.</td></tr>`;
 
-            // Render Tabel Keuangan & Bahan
-            let totalDanaMasuk = 0;
-            let totalBiayaBahan = 0;
-            const tbodyKeuangan = document.getElementById("tabel-keuangan");
-            let htmlKeuangan = "";
-
-            dataKeuangan.forEach((k) => {
-                if (k.jenis === "DANA_MASUK") totalDanaMasuk += Number(k.nominal);
-                else totalBiayaBahan += Number(k.nominal);
-
-                const badgeKat = k.jenis === "DANA_MASUK"
-                    ? `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-bold">DANA MASUK</span>`
-                    : `<span class="bg-sky-500/20 text-sky-300 border border-sky-500/40 px-2 py-0.5 rounded text-[10px] font-bold">BIAYA BAHAN/ALAT</span>`;
-
-                htmlKeuangan += `
-                <tr class="hover:bg-slate-800/60">
-                    <td class="p-3 text-slate-300">${k.tanggal}</td>
-                    <td class="p-3">${badgeKat}</td>
-                    <td class="p-3 font-bold text-white">${k.uraian}</td>
-                    <td class="p-3 text-center text-slate-300">${k.qty || "-"}</td>
-                    <td class="p-3 text-right font-extrabold ${k.jenis === 'DANA_MASUK' ? 'text-emerald-400' : 'text-sky-400'}">${formatRp(k.nominal)}</td>
-                    <td class="p-3 text-center no-print">
-                        <div class="flex justify-center gap-1.5">
-                            <button onclick="window.editKeuangan('${k.id}')" class="bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-slate-200 px-2.5 py-1.5 rounded text-xs font-bold transition cursor-pointer">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <button onclick="window.hapusKeuangan('${k.id}')" class="bg-slate-700 hover:bg-rose-500 text-slate-200 px-2.5 py-1.5 rounded text-xs font-bold transition cursor-pointer">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>`;
-            });
-            tbodyKeuangan.innerHTML = htmlKeuangan || `<tr><td colspan="6" class="p-6 text-center text-slate-400">Belum ada catatan bahan/keuangan.</td></tr>`;
-
-            // Update KPI Akuntansi Atas
-            const saldoBersih = totalDanaMasuk - (totalUpahKotor + totalBiayaBahan);
-            document.getElementById("kpi-pemasukan").innerText = formatRp(totalDanaMasuk);
-            document.getElementById("kpi-upah").innerText = formatRp(totalUpahKotor);
-            document.getElementById("kpi-hutang").innerText = formatRp(totalHutangPekerja);
-            document.getElementById("kpi-bahan").innerText = formatRp(totalBiayaBahan);
-            document.getElementById("kpi-saldo").innerText = formatRp(saldoBersih);
+            // Update KPI Atas
+            document.getElementById("kpi-total").innerText = dataWorkshop.length + " Tugas";
+            document.getElementById("kpi-belum").innerText = jmlBelum + " Tugas";
+            document.getElementById("kpi-selesai").innerText = jmlSelesai + " Tugas";
+            document.getElementById("kpi-biaya").innerText = formatRp(totalBiayaSemua);
             document.getElementById("tgl-cetak-pdf").innerText = new Date().toLocaleDateString("id-ID", { day: '2-digit', month: 'long', year: 'numeric' });
         };
 
-        // Fungsi Render Khusus Laporan Bulanan (Otomatis memilah data dari Pekerja)
-        window.renderTabelBulanan = function() {
-            const tbodyBulanan = document.getElementById("tabel-laporan-bulanan");
-            if (!tbodyBulanan) return;
-
-            let filterBulan = "ALL";
-            const elmFilter = document.getElementById("pilih-bulan-laporan");
-            if (elmFilter) filterBulan = elmFilter.value;
-
-            let htmlB = "";
-            let dataLaporanFilter = dataPekerja;
-
-            if (filterBulan !== "ALL") {
-                dataLaporanFilter = dataPekerja.filter(p => p.tanggal && p.tanggal.startsWith(filterBulan));
-            }
-
-            // Urutkan berdasarkan tanggal (Terbaru di atas)
-            dataLaporanFilter.sort((a, b) => new Date(b.tanggal || 0) - new Date(a.tanggal || 0));
-
-            dataLaporanFilter.forEach(item => {
-                const upahKotor = hitungUpahKotor(item);
-                const tampilFotoB = item.foto
-                    ? `<img src="${item.foto}" class="w-14 h-10 object-cover rounded border border-slate-600 mx-auto">`
-                    : `<div class="w-14 h-10 rounded bg-slate-900 border border-slate-700 flex items-center justify-center text-[9px] text-slate-400 mx-auto">Tanpa Foto</div>`;
-
-                const badgeStatusB = item.statusBayar === "SUDAH DIBAYAR"
-                    ? `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-bold">LUNAS</span>`
-                    : `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded text-[10px] font-bold">BELUM</span>`;
-
-                htmlB += `
-                <tr class="hover:bg-slate-800/60">
-                    <td class="p-3 text-center text-slate-300 font-bold">${item.tanggal || "-"}</td>
-                    <td class="p-2 text-center">${tampilFotoB}</td>
-                    <td class="p-3 font-bold text-white">${item.jenisKerja}</td>
-                    <td class="p-3 text-slate-300">${item.nama}</td>
-                    <td class="p-3 text-center text-xs">${item.hariHadir} Hari (${item.jmlOrang} Org)<br><span class="text-[9px] text-slate-400 uppercase">${item.tipeUpah}</span></td>
-                    <td class="p-3 text-right font-extrabold text-amber-400">${formatRp(upahKotor)}</td>
-                    <td class="p-3 text-center">${badgeStatusB}</td>
-                </tr>`;
-            });
-
-            tbodyBulanan.innerHTML = htmlB || `<tr><td colspan="7" class="p-6 text-center text-slate-400">Tidak ada aktivitas pekerjaan harian untuk bulan ini.</td></tr>`;
-        };
-
-        // Fungsi Buka & Simpan Pekerja (Ditambah Tanggal Kerja)
-        window.bukaModalPekerja = function() {
-            document.getElementById("judul-modal-pekerja").innerText = "Input Data Pekerja & Pekerjaan Harian";
-            document.getElementById("inp-id-pekerja").value = "";
-            document.getElementById("inp-tanggal-kerja").value = new Date().toISOString().split('T')[0];
-            document.getElementById("inp-nama").value = "";
-            document.getElementById("inp-jenis-kerja").value = "";
-            document.getElementById("inp-tipe-upah").value = "HARIAN";
-            document.getElementById("inp-jml-orang").value = "1";
-            document.getElementById("inp-hari-hadir").value = "1";
-            document.getElementById("inp-tarif").value = "";
-            document.getElementById("inp-hutang").value = "0";
-            document.getElementById("inp-status-bayar").value = "BELUM DIBAYAR";
+        window.bukaModalPekerjaan = function() {
+            document.getElementById("judul-modal").innerText = "Input Laporan Pekerjaan Workshop";
+            document.getElementById("inp-id").value = "";
+            document.getElementById("inp-tanggal").value = new Date().toISOString().split('T')[0];
+            document.getElementById("inp-status").value = "BELUM DIKERJAKAN";
+            document.getElementById("inp-jenis").value = "";
+            document.getElementById("inp-pelaksana").value = "";
+            document.getElementById("inp-biaya").value = "";
             document.getElementById("inp-data-foto").value = "";
-            document.getElementById("pin-simpan-pekerja").value = "";
-            document.getElementById("modal-form-pekerja").classList.remove("hidden");
+            document.getElementById("pin-admin").value = "";
+            document.getElementById("modal-form-pekerjaan").classList.remove("hidden");
         };
 
-        window.editPekerja = function(id) {
-            if (!window.verifikasiPinPopup("membuka menu Edit Pekerja")) return;
-            const item = dataPekerja.find(x => x.id === id);
+        window.editData = function(id) {
+            if (!window.cekPin("membuka menu Edit Pekerjaan")) return;
+            const item = dataWorkshop.find(x => x.id === id);
             if (!item) return;
-            document.getElementById("judul-modal-pekerja").innerText = "Edit Data Pekerja";
-            document.getElementById("inp-id-pekerja").value = item.id;
-            document.getElementById("inp-tanggal-kerja").value = item.tanggal || new Date().toISOString().split('T')[0];
-            document.getElementById("inp-nama").value = item.nama;
-            document.getElementById("inp-jenis-kerja").value = item.jenisKerja;
-            document.getElementById("inp-tipe-upah").value = item.tipeUpah;
-            document.getElementById("inp-jml-orang").value = item.jmlOrang;
-            document.getElementById("inp-hari-hadir").value = item.hariHadir;
-            document.getElementById("inp-tarif").value = item.tarif;
-            document.getElementById("inp-hutang").value = item.hutang;
-            document.getElementById("inp-status-bayar").value = item.statusBayar;
+
+            document.getElementById("judul-modal").innerText = "Edit Laporan Pekerjaan Workshop";
+            document.getElementById("inp-id").value = item.id;
+            document.getElementById("inp-tanggal").value = item.tanggal;
+            document.getElementById("inp-status").value = item.status;
+            document.getElementById("inp-jenis").value = item.jenis;
+            document.getElementById("inp-pelaksana").value = item.pelaksana;
+            document.getElementById("inp-biaya").value = item.biaya;
             document.getElementById("inp-data-foto").value = item.foto || "";
-            document.getElementById("pin-simpan-pekerja").value = SANDI_PIN_ADMIN;
-            document.getElementById("modal-form-pekerja").classList.remove("hidden");
+            document.getElementById("pin-admin").value = PIN_KUNCI;
+            document.getElementById("modal-form-pekerjaan").classList.remove("hidden");
         };
 
-        window.simpanDataPekerja = function() {
-            const pin = document.getElementById("pin-simpan-pekerja").value.trim();
-            if (pin !== SANDI_PIN_ADMIN) {
-                alert("❌ SANDI PIN 4 DIGIT SALAH! Data tidak disimpan.");
+        window.simpanData = function() {
+            const pin = document.getElementById("pin-admin").value.trim();
+            if (pin !== PIN_KUNCI) {
+                alert("❌ SANDI PIN SALAH!");
                 return;
             }
-            const id = document.getElementById("inp-id-pekerja").value;
+
+            const id = document.getElementById("inp-id").value;
             const itemBaru = {
-                id: id || "PKJ-" + Date.now(),
-                tanggal: document.getElementById("inp-tanggal-kerja").value,
-                nama: document.getElementById("inp-nama").value.trim() || "Pekerja",
-                jenisKerja: document.getElementById("inp-jenis-kerja").value.trim() || "Umum",
-                tipeUpah: document.getElementById("inp-tipe-upah").value,
-                jmlOrang: Number(document.getElementById("inp-jml-orang").value || 1),
-                hariHadir: Number(document.getElementById("inp-hari-hadir").value || 1),
-                tarif: Number(document.getElementById("inp-tarif").value || 0),
-                hutang: Number(document.getElementById("inp-hutang").value || 0),
-                statusBayar: document.getElementById("inp-status-bayar").value,
+                id: id || "WS-" + Date.now(),
+                tanggal: document.getElementById("inp-tanggal").value,
+                status: document.getElementById("inp-status").value,
+                jenis: document.getElementById("inp-jenis").value.trim() || "Perbaikan",
+                pelaksana: document.getElementById("inp-pelaksana").value.trim() || "Tim Workshop",
+                biaya: Number(document.getElementById("inp-biaya").value || 0),
                 foto: document.getElementById("inp-data-foto").value || ""
             };
 
             if (id) {
-                const idx = dataPekerja.findIndex(x => x.id === id);
-                if (idx > -1) dataPekerja[idx] = itemBaru;
+                const idx = dataWorkshop.findIndex(x => x.id === id);
+                if (idx > -1) dataWorkshop[idx] = itemBaru;
             } else {
-                dataPekerja.push(itemBaru);
+                dataWorkshop.push(itemBaru);
             }
-            window.tutupModal("modal-form-pekerja");
-            window.renderSemua();
+
+            window.tutupModal();
+            window.renderTabel();
         };
 
-        window.hapusPekerja = function(id) {
-            if (!window.verifikasiPinPopup("MENGHAPUS data pekerja ini")) return;
-            dataPekerja = dataPekerja.filter(x => x.id !== id);
-            window.renderSemua();
+        window.hapusData = function(id) {
+            if (!window.cekPin("MENGHAPUS laporan pekerjaan ini")) return;
+            dataWorkshop = dataWorkshop.filter(x => x.id !== id);
+            window.renderTabel();
         };
 
-        // Fungsi Buka & Simpan Keuangan/Bahan
-        window.bukaModalKeuangan = function() {
-            document.getElementById("inp-id-keuangan").value = "";
-            document.getElementById("inp-tgl-kas").value = new Date().toISOString().split('T')[0];
-            document.getElementById("inp-jenis-kas").value = "BIAYA_BAHAN";
-            document.getElementById("inp-uraian-kas").value = "";
-            document.getElementById("inp-qty-kas").value = "";
-            document.getElementById("inp-nominal-kas").value = "";
-            document.getElementById("pin-simpan-keuangan").value = "";
-            document.getElementById("modal-form-keuangan").classList.remove("hidden");
+        window.tutupModal = function() {
+            document.getElementById("modal-form-pekerjaan").classList.add("hidden");
         };
 
-        window.editKeuangan = function(id) {
-            if (!window.verifikasiPinPopup("membuka menu Edit Transaksi Bahan/Kas")) return;
-            const item = dataKeuangan.find(x => x.id === id);
-            if (!item) return;
-            document.getElementById("inp-id-keuangan").value = item.id;
-            document.getElementById("inp-tgl-kas").value = item.tanggal;
-            document.getElementById("inp-jenis-kas").value = item.jenis;
-            document.getElementById("inp-uraian-kas").value = item.uraian;
-            document.getElementById("inp-qty-kas").value = item.qty;
-            document.getElementById("inp-nominal-kas").value = item.nominal;
-            document.getElementById("pin-simpan-keuangan").value = SANDI_PIN_ADMIN;
-            document.getElementById("modal-form-keuangan").classList.remove("hidden");
-        };
-
-        window.simpanDataKeuangan = function() {
-            const pin = document.getElementById("pin-simpan-keuangan").value.trim();
-            if (pin !== SANDI_PIN_ADMIN) {
-                alert("❌ SANDI PIN 4 DIGIT SALAH! Transaksi ditolak.");
-                return;
-            }
-            const id = document.getElementById("inp-id-keuangan").value;
-            const itemBaru = {
-                id: id || "KAS-" + Date.now(),
-                tanggal: document.getElementById("inp-tgl-kas").value,
-                jenis: document.getElementById("inp-jenis-kas").value,
-                uraian: document.getElementById("inp-uraian-kas").value.trim() || "Transaksi",
-                qty: document.getElementById("inp-qty-kas").value.trim(),
-                nominal: Number(document.getElementById("inp-nominal-kas").value || 0)
-            };
-
-            if (id) {
-                const idx = dataKeuangan.findIndex(x => x.id === id);
-                if (idx > -1) dataKeuangan[idx] = itemBaru;
-            } else {
-                dataKeuangan.push(itemBaru);
-            }
-            window.tutupModal("modal-form-keuangan");
-            window.renderSemua();
-        };
-
-        window.hapusKeuangan = function(id) {
-            if (!window.verifikasiPinPopup("MENGHAPUS transaksi keuangan ini")) return;
-            dataKeuangan = dataKeuangan.filter(x => x.id !== id);
-            window.renderSemua();
-        };
-
-        window.tutupModal = function(idModal) {
-            document.getElementById(idModal).classList.add("hidden");
-        };
-
-        // Fungsi Navigasi Tab Terpadu (Telah Diperbaiki & Dibersihkan)
-        window.pindahTab = function(tab) {
-            const secPekerja = document.getElementById("sec-pekerja");
-            const secBahan = document.getElementById("sec-bahan");
-            const secBulanan = document.getElementById("sec-bulanan");
-            const ringkasan = document.getElementById("sec-ringkasan");
-            const daftarTab = ["PEKERJA", "BAHAN", "SEMUA", "BULANAN"];
-
-            // 1. Ganti warna tombol tab yang sedang aktif
-            daftarTab.forEach(t => {
-                const btn = document.getElementById("tab-btn-" + t);
-                if (btn) {
-                    btn.className = (t === tab)
-                        ? "px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold bg-amber-500 text-slate-950 cursor-pointer"
-                        : "px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer";
-                }
-            });
-
-            // 2. Logika visibilitas masing-masing seksi berdasarkan tab yang diklik
-            if (tab === "PEKERJA") {
-                if(ringkasan) ringkasan.classList.remove("hidden");
-                if(secPekerja) secPekerja.classList.remove("hidden");
-                if(secBahan) secBahan.classList.add("hidden");
-                if(secBulanan) secBulanan.classList.add("hidden");
-            } 
-            else if (tab === "BAHAN") {
-                if(ringkasan) ringkasan.classList.remove("hidden");
-                if(secPekerja) secPekerja.classList.add("hidden");
-                if(secBahan) secBahan.classList.remove("hidden");
-                if(secBulanan) secBulanan.classList.add("hidden");
-            } 
-            else if (tab === "BULANAN") {
-                if(ringkasan) ringkasan.classList.add("hidden"); // Sembunyikan ringkasan di tab bulanan agar fokus ke laporan harian
-                if(secPekerja) secPekerja.classList.add("hidden");
-                if(secBahan) secBahan.classList.add("hidden");
-                if(secBulanan) secBulanan.classList.remove("hidden");
-                window.renderTabelBulanan();
-            } 
-            else { // Tab "SEMUA" (Laporan Lengkap)
-                if(ringkasan) ringkasan.classList.remove("hidden");
-                if(secPekerja) secPekerja.classList.remove("hidden");
-                if(secBahan) secBahan.classList.remove("hidden");
-                if(secBulanan) secBulanan.classList.add("hidden"); // Bulanan disembunyikan saat cetak semua karena data pekerja sudah mewakili
-            }
-        };
-
-        // Fungsi Cetak Semua (Lengkap dengan Ringkasan Atas)
         window.cetakLaporanPDF = function() {
-            const ringkasan = document.getElementById("sec-ringkasan");
-            if (ringkasan) ringkasan.classList.remove("hidden");
-            window.pindahTab("SEMUA");
-            setTimeout(() => { window.print(); }, 300);
+            window.print();
         };
 
-        // Fungsi Cetak Khusus Hanya Tabel yang Ditandai
-        window.cetakBagianSaja = function(bagian) {
-            const ringkasan = document.getElementById("sec-ringkasan");
-            const secPekerja = document.getElementById("sec-pekerja");
-            const secBahan = document.getElementById("sec-bahan");
-            const secBulanan = document.getElementById("sec-bulanan");
-
-            // Sembunyikan ringkasan atas agar fokus murni pada tabel yang diprint
-            if (ringkasan) ringkasan.classList.add("hidden");
-
-            if (bagian === "PEKERJA") {
-                if(secPekerja) secPekerja.classList.remove("hidden");
-                if(secBahan) secBahan.classList.add("hidden");
-                if(secBulanan) secBulanan.classList.add("hidden");
-            } else if (bagian === "BAHAN") {
-                if(secPekerja) secPekerja.classList.add("hidden");
-                if(secBahan) secBahan.classList.remove("hidden");
-                if(secBulanan) secBulanan.classList.add("hidden");
-            } else if (bagian === "BULANAN") {
-                if(secPekerja) secPekerja.classList.add("hidden");
-                if(secBahan) secBahan.classList.add("hidden");
-                if(secBulanan) secBulanan.classList.remove("hidden");
-                window.renderTabelBulanan();
-            }
-
-            setTimeout(() => {
-                window.print();
-                // Setelah selesai nge-print, kembalikan tampilan sesuai tab yang aktif
-                if (bagian === "BULANAN") {
-                    window.pindahTab("BULANAN");
-                } else {
-                    if (ringkasan) ringkasan.classList.remove("hidden");
-                    window.pindahTab(bagian);
-                }
-            }, 300);
-        };
-
-        // Backup & Restore Data (Untuk Sinkronisasi Cepat HP <-> PC)
         window.exportBackupData = function() {
-            const paket = { pekerja: dataPekerja, keuangan: dataKeuangan };
-            const blob = new Blob([JSON.stringify(paket, null, 2)], { type: "application/json" });
+            const blob = new Blob([JSON.stringify(dataWorkshop, null, 2)], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = "data-proyek-keuangan.json";
+            a.download = "laporan-workshop-tzco.json";
             a.click();
         };
 
-        window.importBackupData = function(event) {
-            if (!window.verifikasiPinPopup("MEMUAT / MENIMPA data dari file Backup")) return;
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const isi = JSON.parse(e.target.result);
-                    if (isi.pekerja && isi.keuangan) {
-                        dataPekerja = isi.pekerja;
-                        dataKeuangan = isi.keuangan;
-                        window.renderSemua();
-                        alert("✅ Data berhasil dimuat!");
-                    }
-                } catch (err) {
-                    alert("❌ Format file tidak valid.");
-                }
-            };
-            reader.readAsText(file);
-        };
-
-        // Fungsi Kompres Foto Otomatis dari Kamera HP agar Ringan Saat Disimpan & Dicetak PDF
-        window.prosesFotoKerja = function(event) {
+        window.prosesFoto = function(event) {
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
@@ -883,13 +400,11 @@
                 };
                 img.src = e.target.result;
             };
-            reader.readAsText ? reader.readAsDataURL(file) : null;
+            reader.readAsDataURL(file);
         };
-        
+
         window.addEventListener("DOMContentLoaded", () => {
-            // Begitu halaman dibuka, render semuanya dan tampilkan Tab Pekerja sebagai default awal
-            window.renderSemua();
-            window.pindahTab('PEKERJA');
+            window.renderTabel();
         });
     </script>
 </body>
