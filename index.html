@@ -16,6 +16,10 @@
             table { width: 100% !important; border-collapse: collapse !important; }
             th, td, th *, td * { color: #000000 !important; border-color: #333333 !important; }
             th, td { border: 1px solid #333 !important; padding: 6px !important; font-size: 11px !important; }
+            .nota-page { page-break-after: always !important; break-after: page !important; border: 2px solid #000 !important; padding: 20px !important; margin-bottom: 20px !important; background: #fff !important; color: #000 !important; }
+            .nota-page:last-child { page-break-after: auto !important; break-after: auto !important; }
+            .nota-page * { color: #000000 !important; border-color: #000000 !important; }
+            .nota-img-besar { max-height: 320px !important; width: auto !important; max-width: 100% !important; object-fit: contain !important; margin: 0 auto !important; display: block !important; border: 1px solid #000 !important; padding: 4px !important; }
         }
         .print-only { display: none; }
     </style>
@@ -191,37 +195,39 @@
         </section>
 
         <!-- ========================================================= -->
-        <!-- [05.B] BAGIAN 3: LAPORAN PEKERJAAN WORKSHOP & AKSESORIS   -->
+        <!-- [05.B] BAGIAN 3: NOTA LAPORAN PEKERJAAN, BAHAN & PERBAIKAN -->
         <!-- ========================================================= -->
         <section id="sec-workshop" class="space-y-4 hidden">
-            <div class="flex flex-wrap justify-between items-center gap-3">
+            <div class="no-print flex flex-wrap justify-between items-center gap-3">
                 <div>
                     <h2 class="text-base sm:text-lg font-extrabold text-emerald-400 uppercase">
-                        <i class="fa-solid fa-screwdriver-wrench mr-1"></i> Laporan Pekerjaan Workshop (Perbaikan Unit & Pembuatan Aksesoris)
+                        <i class="fa-solid fa-file-invoice-dollar mr-1"></i> Daftar Nota Laporan (Perbaikan Unit, Pembelian Bahan & Pekerjaan)
                     </h2>
-                    <p class="text-xs text-slate-400">Laporan per tugas (Individu/Kelompok) — Status Belum Dikerjakan s/d Selesai untuk Manajemen Keuangan.</p>
+                    <p class="text-xs text-slate-400">Setiap item memiliki Nomor Urut Nota resmi & Lampiran Foto Besar untuk diajukan per lembar PDF/Print ke Manajemen Keuangan.</p>
                 </div>
-                <div class="no-print flex flex-wrap gap-2">
-                    <button onclick="window.cetakBagianSaja('WORKSHOP')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-print"></i> Cetak Laporan Workshop Saja
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="window.cetakSemuaNotaWorkshop()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-print"></i> Cetak Semua Lembar Nota
                     </button>
                     <button onclick="window.bukaModalWorkshop()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-plus"></i> + Input Pekerjaan Workshop (PIN)
+                        <i class="fa-solid fa-plus"></i> + Buat Nota Baru (PIN)
                     </button>
                 </div>
             </div>
 
-            <div class="print-box bg-slate-800/90 border border-slate-700 rounded-xl overflow-x-auto shadow-lg">
+            <!-- TABEL DAFTAR NOTA DI LAYAR MONITOR / HP (TIDAK IKUT TERCETAK SAAT MODE NOTA PER LEMBAR) -->
+            <div id="bungkus-tabel-ws" class="no-print bg-slate-800/90 border border-slate-700 rounded-xl overflow-x-auto shadow-lg">
                 <table class="w-full text-left border-collapse text-xs sm:text-sm">
                     <thead>
                         <tr class="bg-slate-950 text-slate-300 border-b border-slate-700 uppercase text-[11px]">
+                            <th class="p-3 text-center">No. Urut Nota</th>
                             <th class="p-3 text-center">Tanggal</th>
-                            <th class="p-3 text-center">Foto / Gambar</th>
-                            <th class="p-3">Nama & Jenis Pekerjaan (Unit / Aksesoris)</th>
-                            <th class="p-3">Pelaksana & Sistem</th>
-                            <th class="p-3 text-right">Biaya Pekerjaan (Rp)</th>
-                            <th class="p-3 text-center">Status Pengerjaan</th>
-                            <th class="p-3 text-center no-print">Aksi (PIN)</th>
+                            <th class="p-3 text-center">Lampiran Foto</th>
+                            <th class="p-3">Jenis Nota & Uraian Laporan</th>
+                            <th class="p-3">Pelaksana / Toko</th>
+                            <th class="p-3 text-right">Biaya Diajukan (Rp)</th>
+                            <th class="p-3 text-center">Status</th>
+                            <th class="p-3 text-center">Cetak Lembar & Aksi (PIN)</th>
                         </tr>
                     </thead>
                     <tbody id="tabel-workshop" class="divide-y divide-slate-700/70">
@@ -229,10 +235,15 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- AREA CETAK & PRATINJAU NOTA PER LEMBAR (DENGAN GAMBAR BESAR) -->
+            <div id="area-lembar-nota" class="space-y-6 pt-2">
+                <!-- Kartu Nota Per Lembar Dirender Otomatis oleh JS di Sini -->
+            </div>
         </section>
         
         <!-- KOLOM TANDA TANGAN KHUSUS SAAT PRINT / PDF -->
-        <div class="print-only pt-10">
+        <div id="ttd-umum-bawah" class="print-only pt-10">
             <div class="grid grid-cols-2 gap-8 text-center text-xs">
                 <div>
                     <p class="mb-16">Dibuat & Dilaporkan Oleh,<br><strong>Koordinator Lapangan / Admin</strong></p>
@@ -368,59 +379,68 @@
     </div>
 
     <!-- ========================================================= -->
-    <!-- [07.B] MODAL INPUT / EDIT PEKERJAAN WORKSHOP (PIN)        -->
+    <!-- [07.B] MODAL INPUT / EDIT NOTA LAPORAN WORKSHOP & BAHAN   -->
     <!-- ========================================================= -->
     <div id="modal-form-workshop" class="no-print fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg p-5 shadow-2xl my-8">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
-                <h3 id="judul-modal-workshop" class="font-extrabold text-emerald-400 text-base">Input Laporan Pekerjaan Workshop</h3>
+                <h3 id="judul-modal-workshop" class="font-extrabold text-emerald-400 text-base">Buat Nota Laporan Baru</h3>
                 <button onclick="window.tutupModal('modal-form-workshop')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
             <input type="hidden" id="inp-id-ws">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Tanggal Pekerjaan*</label>
+                    <label class="block text-amber-400 mb-1 font-extrabold">Nomor Urut Nota Laporan*</label>
+                    <input type="text" id="inp-nourut-ws" placeholder="Otomatis: NOTA-001" class="w-full bg-slate-950 border border-amber-500/60 rounded-lg p-2.5 text-amber-400 font-black">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">Tanggal Nota / Kegiatan*</label>
                     <input type="date" id="inp-tgl-ws" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
                 </div>
-                <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Kategori Tugas Workshop*</label>
-                    <select id="inp-kategori-ws" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                        <option value="PERBAIKAN UNIT">Perbaikan Bagian Unit Alat Berat</option>
-                        <option value="PEMBUATAN AKSESORIS">Pembuatan Aksesoris Unit</option>
-                        <option value="PEKERJAAN LAINNYA">Pekerjaan Workshop Lainnya</option>
+                <div class="sm:col-span-2">
+                    <label class="block text-slate-400 mb-1 font-bold">Jenis Nota Laporan*</label>
+                    <select id="inp-kategori-ws" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white font-bold">
+                        <option value="NOTA PERBAIKAN UNIT">1. Nota Perbaikan Bagian Unit Alat Berat</option>
+                        <option value="NOTA PEMBELIAN BAHAN">2. Nota Pembelian Bahan / Sparepart / Material</option>
+                        <option value="NOTA PEMBUATAN AKSESORIS">3. Nota Pembuatan Aksesoris & Pekerjaan Lainnya</option>
                     </select>
                 </div>
                 <div class="sm:col-span-2">
-                    <label class="block text-slate-400 mb-1 font-bold">Nama & Detail Jenis Pekerjaan*</label>
-                    <input type="text" id="inp-jenis-ws" placeholder="Contoh: Perbaikan Silinder Boom TZ 60 / Buat Kuku Bucket" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+                    <label class="block text-slate-400 mb-1 font-bold">Judul Pekerjaan / Nama Bahan / Perbaikan*</label>
+                    <input type="text" id="inp-jenis-ws" placeholder="Contoh: Perbaikan Silinder Boom TZ 60 / Beli Seal Kit & Kawat Las" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Nama Pekerja / Pelaksana*</label>
-                    <input type="text" id="inp-pelaksana-ws" placeholder="Contoh: Budi / Tim Las Hendra" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+                    <label class="block text-slate-400 mb-1 font-bold">Pelaksana / Nama Toko / Supplier*</label>
+                    <input type="text" id="inp-pelaksana-ws" placeholder="Contoh: Ahmad & Budi / Toko Teknik Jaya" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Tipe Pelaksana*</label>
+                    <label class="block text-slate-400 mb-1 font-bold">Sistem Kerja / Keterangan Qty*</label>
                     <select id="inp-tipe-ws" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                        <option value="KELOMPOK (TIM)">Berkelompok (Tim)</option>
-                        <option value="SENDIRI (INDIVIDU)">Sendiri-Sendiri (Individu)</option>
+                        <option value="KELOMPOK (TIM)">Pekerja Berkelompok (Tim)</option>
+                        <option value="SENDIRI (INDIVIDU)">Pekerja Sendiri (Individu)</option>
+                        <option value="PEMBELIAN BAHAN / TOKO">Pembelian Bahan / Material</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Biaya Pekerjaan Diajukan (Rp)*</label>
-                    <input type="number" id="inp-biaya-ws" placeholder="Contoh: 1250000" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+                    <label class="block text-slate-400 mb-1 font-bold">Total Biaya Diajukan (Rp)*</label>
+                    <input type="number" id="inp-biaya-ws" placeholder="Contoh: 1750000" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-bold">Status Penyelesaian*</label>
+                    <label class="block text-slate-400 mb-1 font-bold">Status Nota / Pekerjaan*</label>
                     <select id="inp-status-ws" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
-                        <option value="BELUM DIKERJAKAN">BELUM DIKERJAKAN</option>
+                        <option value="SUDAH DISELESAIKAN">SUDAH DISELESAIKAN / DIBELI</option>
                         <option value="DALAM PROSES">SEDANG DIKERJAKAN (PROSES)</option>
-                        <option value="SUDAH DISELESAIKAN">SUDAH DISELESAIKAN</option>
+                        <option value="BELUM DIKERJAKAN">BELUM DIKERJAKAN (PENGAJUAN)</option>
                     </select>
                 </div>
                 <div class="sm:col-span-2">
-                    <label class="block text-slate-400 mb-1 font-bold"><i class="fa-solid fa-camera text-emerald-400 mr-1"></i> Upload Foto Unit / Aksesoris (Kamera HP / File)</label>
-                    <input type="file" id="inp-foto-ws" accept="image/*" onchange="window.prosesFotoWorkshop(event)" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white text-xs">
+                    <label class="block text-slate-400 mb-1 font-bold">Catatan Tambahan / Rincian Bahan (Opsional)</label>
+                    <input type="text" id="inp-catatan-ws" placeholder="Contoh: Penggantian seal dalam + oli hidrolik 20L selesai diuji." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-emerald-400 mb-1 font-bold"><i class="fa-solid fa-camera mr-1"></i> Lampirkan Foto Ukuran Besar (Bukti Kerja / Fisik Bahan / Struk)*</label>
+                    <input type="file" id="inp-foto-ws" accept="image/*" onchange="window.prosesFotoWorkshop(event)" class="w-full bg-slate-950 border border-emerald-500/50 rounded-lg p-2 text-white text-xs">
                     <input type="hidden" id="inp-data-foto-ws">
                 </div>
                 <div class="sm:col-span-2 bg-slate-950 border border-amber-500/50 p-3 rounded-xl mt-1">
@@ -431,7 +451,7 @@
 
             <div class="flex justify-end gap-2 mt-5">
                 <button onclick="window.tutupModal('modal-form-workshop')" class="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold">Batal</button>
-                <button onclick="window.simpanDataWorkshop()" class="px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold cursor-pointer">Verifikasi PIN & Simpan</button>
+                <button onclick="window.simpanDataWorkshop()" class="px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold cursor-pointer">Verifikasi PIN & Simpan Nota</button>
             </div>
         </div>
     </div>
@@ -747,41 +767,54 @@
             document.getElementById(idModal).classList.add("hidden");
         };
 
-        // Database Pekerjaan Workshop (Perbaikan Unit & Pembuatan Aksesoris)
+        // Database Nota Laporan Workshop, Pembelian Bahan & Perbaikan Unit
         let dataWorkshop = JSON.parse(localStorage.getItem("DB_WORKSHOP_PROYEK")) || [
             {
                 id: "WS-1",
-                tanggal: "2026-11-16",
-                kategori: "PERBAIKAN UNIT",
+                noUrut: "NOTA-001",
+                tanggal: "2026-11-02",
+                kategori: "NOTA PERBAIKAN UNIT",
                 jenisKerja: "Perbaikan Silinder Boom & Ganti Seal Kit TZ 60",
                 pelaksana: "Ahmad & Budi",
                 tipePelaksana: "KELOMPOK (TIM)",
                 biaya: 1750000,
                 status: "SUDAH DISELESAIKAN",
+                catatan: "Unit TZ 60 sudah diuji coba tekanan hidrolik normal tanpa kebocoran.",
                 foto: ""
             },
             {
                 id: "WS-2",
+                noUrut: "NOTA-002",
                 tanggal: "2026-11-17",
-                kategori: "PEMBUATAN AKSESORIS",
+                kategori: "NOTA PEMBUATAN AKSESORIS",
                 jenisKerja: "Pembuatan Pelindung Kabin & Kuku Bucket TZ 80",
                 pelaksana: "Hendra",
                 tipePelaksana: "SENDIRI (INDIVIDU)",
                 biaya: 950000,
                 status: "BELUM DIKERJAKAN",
+                catatan: "Pengajuan dana bahan plat baja dan upah pembuatan aksesoris pelindung.",
                 foto: ""
             }
         ];
 
-        window.renderTabelWorkshop = function() {
+        // Buat Nomor Urut Otomatis (NOTA-001, NOTA-002, dst. walau tanggal berjauhan)
+        const buatNomorNotaOtomatis = () => {
+            const nomorBerikutnya = dataWorkshop.length + 1;
+            return "NOTA-" + String(nomorBerikutnya).padStart(3, "0");
+        };
+
+        window.renderTabelWorkshop = function(idNotaCetakTunggal = null) {
             localStorage.setItem("DB_WORKSHOP_PROYEK", JSON.stringify(dataWorkshop));
             const tbodyWs = document.getElementById("tabel-workshop");
-            if (!tbodyWs) return;
+            const areaNota = document.getElementById("area-lembar-nota");
+            if (!tbodyWs || !areaNota) return;
 
             let htmlWs = "";
+            let htmlLembarNota = "";
             let totalBiayaWs = 0;
 
-            dataWorkshop.forEach((w) => {
+            dataWorkshop.forEach((w, index) => {
+                const noNotaResmi = w.noUrut || ("NOTA-" + String(index + 1).padStart(3, "0"));
                 totalBiayaWs += Number(w.biaya || 0);
 
                 let badgeStatus = `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded text-[10px] font-extrabold">BELUM DIKERJAKAN</span>`;
@@ -791,17 +824,22 @@
                     badgeStatus = `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-extrabold">SUDAH DISELESAIKAN</span>`;
                 }
 
-                const tampilFotoWs = w.foto
-                    ? `<img src="${w.foto}" alt="Foto ${w.jenisKerja}" class="w-16 h-12 object-cover rounded border border-slate-600 mx-auto">`
-                    : `<div class="w-16 h-12 rounded bg-slate-900 border border-slate-700 flex items-center justify-center text-[10px] text-slate-400 mx-auto">Tanpa Foto</div>`;
+                const tampilFotoKecil = w.foto
+                    ? `<img src="${w.foto}" alt="Foto ${w.jenisKerja}" class="w-20 h-14 object-cover rounded border border-slate-500 mx-auto">`
+                    : `<div class="w-20 h-14 rounded bg-slate-900 border border-slate-700 flex items-center justify-center text-[10px] text-slate-400 mx-auto">Tanpa Foto</div>`;
 
+                // 1. Baris Tabel Rekap di Monitor
                 htmlWs += `
                 <tr class="hover:bg-slate-800/60">
+                    <td class="p-3 text-center">
+                        <span class="bg-amber-500 text-slate-950 font-black px-2.5 py-1 rounded text-xs tracking-wider">${noNotaResmi}</span>
+                    </td>
                     <td class="p-3 text-center text-slate-300 font-bold">${w.tanggal}</td>
-                    <td class="p-2 text-center">${tampilFotoWs}</td>
+                    <td class="p-2 text-center">${tampilFotoKecil}</td>
                     <td class="p-3">
                         <span class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-slate-950 text-amber-400 border border-amber-500/30">${w.kategori}</span>
                         <div class="font-bold text-white mt-1">${w.jenisKerja}</div>
+                        ${w.catatan ? `<div class="text-[11px] text-slate-400 mt-0.5 italic">"${w.catatan}"</div>` : ""}
                     </td>
                     <td class="p-3">
                         <div class="font-bold text-slate-200">${w.pelaksana}</div>
@@ -809,8 +847,11 @@
                     </td>
                     <td class="p-3 text-right font-extrabold text-emerald-400">${formatRp(w.biaya)}</td>
                     <td class="p-3 text-center">${badgeStatus}</td>
-                    <td class="p-3 text-center no-print">
+                    <td class="p-3 text-center">
                         <div class="flex justify-center gap-1.5">
+                            <button onclick="window.cetakSatuNota('${w.id}')" class="bg-sky-500 hover:bg-sky-400 text-slate-950 px-2.5 py-1.5 rounded text-xs font-extrabold transition cursor-pointer flex items-center gap-1" title="Cetak PDF / Print Nota Ini Saja">
+                                <i class="fa-solid fa-print"></i> Nota
+                            </button>
                             <button onclick="window.editWorkshop('${w.id}')" class="bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-slate-200 px-2.5 py-1.5 rounded text-xs font-bold transition cursor-pointer" title="Edit dengan PIN">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
@@ -820,30 +861,133 @@
                         </div>
                     </td>
                 </tr>`;
+
+                // 2. Desain Lembar Nota Resmi (Dengan Gambar Besar untuk Print/PDF)
+                if (!idNotaCetakTunggal || idNotaCetakTunggal === w.id) {
+                    const blokGambarBesar = w.foto
+                        ? `<div class="my-4 p-3 bg-slate-950/60 border border-slate-700 rounded-xl text-center">
+                               <p class="text-[11px] font-bold text-slate-400 uppercase mb-2">LAMPIRAN FOTO DOKUMENTASI / BUKTI FISIK (${noNotaResmi})</p>
+                               <img src="${w.foto}" alt="Lampiran ${noNotaResmi}" class="nota-img-besar max-h-72 w-auto mx-auto rounded-lg border border-slate-600 object-contain">
+                           </div>`
+                        : `<div class="my-4 p-6 bg-slate-950/40 border border-dashed border-slate-700 rounded-xl text-center text-xs text-slate-400">
+                               Tidak ada lampiran foto pada nota ini. (Klik tombol Edit untuk melampirkan foto).
+                           </div>`;
+
+                    htmlLembarNota += `
+                    <div class="nota-page bg-slate-800/95 border-2 border-slate-600 rounded-2xl p-5 sm:p-7 shadow-xl">
+                        <!-- Kepala Nota -->
+                        <div class="flex flex-wrap justify-between items-start border-b-2 border-slate-600 pb-4 mb-4 gap-4">
+                            <div>
+                                <span class="text-xs font-black uppercase tracking-widest text-amber-400 block">PT. ANTRACK TZCO PALEMBANG — DIVISI WORKSHOP</span>
+                                <h3 class="text-lg sm:text-xl font-black text-white uppercase mt-0.5">${w.kategori}</h3>
+                                <p class="text-xs text-slate-300">Dokumen Pengajuan & Laporan Resmi ke Manajemen Keuangan</p>
+                            </div>
+                            <div class="text-left sm:text-right bg-slate-950 px-4 py-2.5 rounded-xl border border-amber-500/50">
+                                <span class="text-[10px] text-slate-400 uppercase font-bold block">NOMOR URUT LAPORAN:</span>
+                                <span class="text-lg font-black text-amber-400 tracking-wider">${noNotaResmi}</span>
+                                <span class="text-xs text-slate-300 block mt-0.5"><strong>Tanggal Nota:</strong> ${w.tanggal}</span>
+                            </div>
+                        </div>
+
+                        <!-- Tabel Rincian Informasi Nota -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm bg-slate-900/90 p-4 rounded-xl border border-slate-700">
+                            <div>
+                                <span class="text-slate-400 text-xs block">Uraian Pekerjaan / Pembelian Bahan / Perbaikan:</span>
+                                <strong class="text-white text-sm sm:text-base">${w.jenisKerja}</strong>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 text-xs block">Pelaksana / Nama Toko / Mekanik:</span>
+                                <strong class="text-white">${w.pelaksana}</strong> <span class="text-sky-400 text-xs font-bold">(${w.tipePelaksana})</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 text-xs block">Status Penyelesaian:</span>
+                                <strong class="text-amber-400 uppercase">${w.status}</strong>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 text-xs block">Total Biaya Diajukan / Dilaporkan:</span>
+                                <strong class="text-emerald-400 text-base sm:text-lg font-black">${formatRp(w.biaya)}</strong>
+                            </div>
+                            ${w.catatan ? `<div class="sm:col-span-2 pt-2 border-t border-slate-800"><span class="text-slate-400 text-xs block">Keterangan / Rincian Tambahan:</span><span class="text-slate-200">${w.catatan}</span></div>` : ""}
+                        </div>
+
+                        <!-- Lampiran Gambar Ukuran Besar -->
+                        ${blokGambarBesar}
+
+                        <!-- Kolom Tanda Tangan di Setiap Lembar Nota -->
+                        <div class="grid grid-cols-2 gap-6 text-center text-xs pt-4 border-t border-slate-700 mt-4">
+                            <div>
+                                <p class="mb-14">Diajukan & Dilaporkan Oleh,<br><strong>Penanggung Jawab Workshop</strong></p>
+                                <p class="font-bold underline">( ................................................. )</p>
+                            </div>
+                            <div>
+                                <p class="mb-14">Diverifikasi & Disetujui Oleh,<br><strong>Manajemen Keuangan</strong></p>
+                                <p class="font-bold underline">( ................................................. )</p>
+                            </div>
+                        </div>
+                    </div>`;
+                }
             });
 
             if (dataWorkshop.length > 0) {
                 htmlWs += `
                 <tr class="bg-slate-950 font-extrabold border-t-2 border-slate-600">
-                    <td colspan="4" class="p-3 text-right text-slate-300 uppercase">Total Biaya Pekerjaan Workshop Diajukan:</td>
+                    <td colspan="5" class="p-3 text-right text-slate-300 uppercase">Total Akumulasi Seluruh Nota (${dataWorkshop.length} Lembar):</td>
                     <td class="p-3 text-right text-amber-400 text-sm">${formatRp(totalBiayaWs)}</td>
                     <td colspan="2"></td>
                 </tr>`;
             }
 
-            tbodyWs.innerHTML = htmlWs || `<tr><td colspan="7" class="p-6 text-center text-slate-400">Belum ada laporan pekerjaan workshop.</td></tr>`;
+            tbodyWs.innerHTML = htmlWs || `<tr><td colspan="8" class="p-6 text-center text-slate-400">Belum ada nota laporan.</td></tr>`;
+            areaNota.innerHTML = htmlLembarNota;
+        };
+
+        // Fungsi Cetak 1 Lembar Nota Spesifik (Ukuran Besar Siap Kirim PDF)
+        window.cetakSatuNota = function(idNota) {
+            const ringkasan = document.getElementById("sec-ringkasan");
+            const ttdUmum = document.getElementById("ttd-umum-bawah");
+            if (ringkasan) ringkasan.classList.add("hidden");
+            if (ttdUmum) ttdUmum.style.display = "none";
+
+            // Render hanya 1 nota yang dipilih
+            window.renderTabelWorkshop(idNota);
+
+            setTimeout(() => {
+                window.print();
+                // Kembalikan semua tampilan setelah selesai print
+                if (ringkasan) ringkasan.classList.remove("hidden");
+                if (ttdUmum) ttdUmum.style.display = "";
+                window.renderTabelWorkshop(null);
+            }, 350);
+        };
+
+        // Fungsi Cetak Semua Lembar Nota Sekaligus (1 Nota per Halaman Kertas)
+        window.cetakSemuaNotaWorkshop = function() {
+            const ringkasan = document.getElementById("sec-ringkasan");
+            const ttdUmum = document.getElementById("ttd-umum-bawah");
+            if (ringkasan) ringkasan.classList.add("hidden");
+            if (ttdUmum) ttdUmum.style.display = "none";
+
+            window.renderTabelWorkshop(null);
+
+            setTimeout(() => {
+                window.print();
+                if (ringkasan) ringkasan.classList.remove("hidden");
+                if (ttdUmum) ttdUmum.style.display = "";
+            }, 350);
         };
 
         window.bukaModalWorkshop = function() {
-            document.getElementById("judul-modal-workshop").innerText = "Input Pekerjaan Workshop Baru";
+            document.getElementById("judul-modal-workshop").innerText = "Buat Nota Laporan Baru";
             document.getElementById("inp-id-ws").value = "";
+            document.getElementById("inp-nourut-ws").value = buatNomorNotaOtomatis();
             document.getElementById("inp-tgl-ws").value = new Date().toISOString().split('T')[0];
-            document.getElementById("inp-kategori-ws").value = "PERBAIKAN UNIT";
+            document.getElementById("inp-kategori-ws").value = "NOTA PERBAIKAN UNIT";
             document.getElementById("inp-jenis-ws").value = "";
             document.getElementById("inp-pelaksana-ws").value = "";
             document.getElementById("inp-tipe-ws").value = "KELOMPOK (TIM)";
             document.getElementById("inp-biaya-ws").value = "";
-            document.getElementById("inp-status-ws").value = "BELUM DIKERJAKAN";
+            document.getElementById("inp-status-ws").value = "SUDAH DISELESAIKAN";
+            document.getElementById("inp-catatan-ws").value = "";
             document.getElementById("inp-data-foto-ws").value = "";
             document.getElementById("inp-foto-ws").value = "";
             document.getElementById("pin-simpan-ws").value = "";
@@ -851,11 +995,12 @@
         };
 
         window.editWorkshop = function(id) {
-            if (!window.verifikasiPinPopup("membuka menu Edit Pekerjaan Workshop")) return;
+            if (!window.verifikasiPinPopup("membuka menu Edit Nota Laporan")) return;
             const item = dataWorkshop.find(x => x.id === id);
             if (!item) return;
-            document.getElementById("judul-modal-workshop").innerText = "Edit Pekerjaan Workshop";
+            document.getElementById("judul-modal-workshop").innerText = "Edit Nota Laporan (" + (item.noUrut || "") + ")";
             document.getElementById("inp-id-ws").value = item.id;
+            document.getElementById("inp-nourut-ws").value = item.noUrut || buatNomorNotaOtomatis();
             document.getElementById("inp-tgl-ws").value = item.tanggal;
             document.getElementById("inp-kategori-ws").value = item.kategori;
             document.getElementById("inp-jenis-ws").value = item.jenisKerja;
@@ -863,6 +1008,7 @@
             document.getElementById("inp-tipe-ws").value = item.tipePelaksana;
             document.getElementById("inp-biaya-ws").value = item.biaya;
             document.getElementById("inp-status-ws").value = item.status;
+            document.getElementById("inp-catatan-ws").value = item.catatan || "";
             document.getElementById("inp-data-foto-ws").value = item.foto || "";
             document.getElementById("pin-simpan-ws").value = SANDI_PIN_ADMIN;
             document.getElementById("modal-form-workshop").classList.remove("hidden");
@@ -871,19 +1017,21 @@
         window.simpanDataWorkshop = function() {
             const pin = document.getElementById("pin-simpan-ws").value.trim();
             if (pin !== SANDI_PIN_ADMIN) {
-                alert("❌ SANDI PIN 4 DIGIT SALAH! Data gagal disimpan.");
+                alert("❌ SANDI PIN 4 DIGIT SALAH! Nota gagal disimpan.");
                 return;
             }
             const id = document.getElementById("inp-id-ws").value;
             const itemBaru = {
                 id: id || "WS-" + Date.now(),
+                noUrut: document.getElementById("inp-nourut-ws").value.trim() || buatNomorNotaOtomatis(),
                 tanggal: document.getElementById("inp-tgl-ws").value,
                 kategori: document.getElementById("inp-kategori-ws").value,
-                jenisKerja: document.getElementById("inp-jenis-ws").value.trim() || "Pekerjaan Workshop",
-                pelaksana: document.getElementById("inp-pelaksana-ws").value.trim() || "Mekanik",
+                jenisKerja: document.getElementById("inp-jenis-ws").value.trim() || "Pekerjaan / Pembelian Bahan",
+                pelaksana: document.getElementById("inp-pelaksana-ws").value.trim() || "Workshop",
                 tipePelaksana: document.getElementById("inp-tipe-ws").value,
                 biaya: Number(document.getElementById("inp-biaya-ws").value || 0),
                 status: document.getElementById("inp-status-ws").value,
+                catatan: document.getElementById("inp-catatan-ws").value.trim() || "",
                 foto: document.getElementById("inp-data-foto-ws").value || ""
             };
 
@@ -898,11 +1046,12 @@
         };
 
         window.hapusWorkshop = function(id) {
-            if (!window.verifikasiPinPopup("MENGHAPUS laporan pekerjaan workshop ini")) return;
+            if (!window.verifikasiPinPopup("MENGHAPUS Nota Laporan ini")) return;
             dataWorkshop = dataWorkshop.filter(x => x.id !== id);
             window.renderTabelWorkshop();
         };
 
+        // Kompresi Foto Resolusi Tinggi (Lebar 650px) agar Jelas & Besar Saat Dicetak ke PDF/Kertas
         window.prosesFotoWorkshop = function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -911,13 +1060,13 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement("canvas");
-                    const maxW = 300;
-                    const scale = maxW / img.width;
-                    canvas.width = maxW;
+                    const maxW = 650;
+                    const scale = img.width > maxW ? (maxW / img.width) : 1;
+                    canvas.width = img.width * scale;
                     canvas.height = img.height * scale;
                     const ctx = canvas.getContext("2d");
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    document.getElementById("inp-data-foto-ws").value = canvas.toDataURL("image/jpeg", 0.7);
+                    document.getElementById("inp-data-foto-ws").value = canvas.toDataURL("image/jpeg", 0.8);
                 };
                 img.src = e.target.result;
             };
