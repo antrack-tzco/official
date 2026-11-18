@@ -19,7 +19,9 @@
             .nota-page { page-break-after: always !important; break-after: page !important; border: 2px solid #000 !important; padding: 20px !important; margin-bottom: 20px !important; background: #fff !important; color: #000 !important; }
             .nota-page:last-child { page-break-after: auto !important; break-after: auto !important; }
             .nota-page * { color: #000000 !important; border-color: #000000 !important; }
-            .nota-img-besar { max-height: 320px !important; width: auto !important; max-width: 100% !important; object-fit: contain !important; margin: 0 auto !important; display: block !important; border: 1px solid #000 !important; padding: 4px !important; }
+            div, section, main { overflow: visible !important; }
+            img { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; page-break-inside: avoid !important; }
+            .nota-img-besar { max-height: 280px !important; width: auto !important; max-width: 95% !important; object-fit: contain !important; margin: 0 auto !important; display: block !important; border: 1px solid #000 !important; padding: 4px !important; }
         }
         .print-only { display: none; }
     </style>
@@ -1031,6 +1033,26 @@
             areaNota.innerHTML = htmlLembarNota;
         };
 
+        // Fungsi pembantu: Pastikan semua foto selesai dimuat sebelum disimpan ke PDF
+        const tungguFotoSiapLaluPrint = (callbackSelesai) => {
+            const semuaGambar = Array.from(document.querySelectorAll("img"));
+            const janjiMuat = semuaGambar.map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(res => { img.onload = res; img.onerror = res; });
+            });
+
+            Promise.all(janjiMuat).then(() => {
+                setTimeout(() => {
+                    window.onafterprint = function() {
+                        callbackSelesai();
+                        window.onafterprint = null;
+                    };
+                    window.print();
+                    setTimeout(callbackSelesai, 2500);
+                }, 500);
+            });
+        };
+
         // Cetak Tabel Rekapitulasi Safety Persis Lembar Keuangan ANTRACK
         window.cetakRekapSafety = function() {
             const ringkasan = document.getElementById("sec-ringkasan");
@@ -1040,124 +1062,12 @@
 
             window.renderTabelWorkshop(null);
 
-            setTimeout(() => {
-                window.print();
+            tungguFotoSiapLaluPrint(() => {
                 if (ringkasan) ringkasan.classList.remove("hidden");
                 if (ttdUmum) ttdUmum.style.display = "";
-            }, 350);
+            });
         };
 
-        // Cetak 1 Nota & Foto Besar Spesifik
-        window.cetakSatuNota = function(idNota) {
-            const ringkasan = document.getElementById("sec-ringkasan");
-            const ttdUmum = document.getElementById("ttd-umum-bawah");
-            if (ringkasan) ringkasan.classList.add("hidden");
-            if (ttdUmum) ttdUmum.style.display = "none";
-
-            window.renderTabelWorkshop(idNota);
-
-            setTimeout(() => {
-                window.print();
-                if (ringkasan) ringkasan.classList.remove("hidden");
-                if (ttdUmum) ttdUmum.style.display = "";
-                window.renderTabelWorkshop(null);
-            }, 350);
-        };
-
-        window.bukaModalWorkshop = function() {
-            document.getElementById("judul-modal-workshop").innerText = "Tambah Baris Pekerjaan Safety / Aksesoris";
-            document.getElementById("inp-id-ws").value = "";
-            document.getElementById("inp-nourut-ws").value = buatNomorNotaOtomatis();
-            document.getElementById("inp-tgl-ws").value = new Date().toISOString().split('T')[0];
-            document.getElementById("inp-kategori-ws").value = "";
-            document.getElementById("inp-jenis-ws").value = "";
-            document.getElementById("inp-pelaksana-ws").value = "";
-            document.getElementById("inp-biaya-ws").value = "";
-            document.getElementById("inp-status-ws").value = "READY (BELUM ADA PEMILIK)";
-            document.getElementById("inp-catatan-ws").value = "";
-            document.getElementById("inp-data-foto-ws").value = "";
-            document.getElementById("inp-foto-ws").value = "";
-            document.getElementById("pin-simpan-ws").value = "";
-            document.getElementById("modal-form-workshop").classList.remove("hidden");
-        };
-
-        window.editWorkshop = function(id) {
-            if (!window.verifikasiPinPopup("membuka menu Edit Pekerjaan Safety")) return;
-            const item = dataWorkshop.find(x => x.id === id);
-            if (!item) return;
-            document.getElementById("judul-modal-workshop").innerText = "Edit Baris Pekerjaan (No. " + (item.noUrut || "") + ")";
-            document.getElementById("inp-id-ws").value = item.id;
-            document.getElementById("inp-nourut-ws").value = item.noUrut || buatNomorNotaOtomatis();
-            document.getElementById("inp-tgl-ws").value = item.tanggal;
-            document.getElementById("inp-kategori-ws").value = "";
-            document.getElementById("inp-jenis-ws").value = item.jenisKerja;
-            document.getElementById("inp-pelaksana-ws").value = item.pelaksana;
-            document.getElementById("inp-biaya-ws").value = item.biaya;
-            document.getElementById("inp-status-ws").value = item.status;
-            document.getElementById("inp-catatan-ws").value = item.catatan || "";
-            document.getElementById("inp-data-foto-ws").value = item.foto || "";
-            document.getElementById("pin-simpan-ws").value = SANDI_PIN_ADMIN;
-            document.getElementById("modal-form-workshop").classList.remove("hidden");
-        };
-
-        window.simpanDataWorkshop = function() {
-            const pin = document.getElementById("pin-simpan-ws").value.trim();
-            if (pin !== SANDI_PIN_ADMIN) {
-                alert("❌ SANDI PIN 4 DIGIT SALAH! Data gagal disimpan.");
-                return;
-            }
-            const id = document.getElementById("inp-id-ws").value;
-            const itemBaru = {
-                id: id || "WS-" + Date.now(),
-                noUrut: document.getElementById("inp-nourut-ws").value.trim() || buatNomorNotaOtomatis(),
-                tanggal: document.getElementById("inp-tgl-ws").value,
-                kategori: "SAFETY & AKSESORIS",
-                jenisKerja: document.getElementById("inp-jenis-ws").value.trim().toUpperCase() || "SAFETY TZCO",
-                pelaksana: document.getElementById("inp-pelaksana-ws").value.trim().toUpperCase() || "",
-                tipePelaksana: "TEAM SAFETY",
-                biaya: Number(document.getElementById("inp-biaya-ws").value || 0),
-                status: document.getElementById("inp-status-ws").value.trim().toUpperCase() || "READY",
-                catatan: document.getElementById("inp-catatan-ws").value.trim() || "",
-                foto: document.getElementById("inp-data-foto-ws").value || ""
-            };
-
-            if (id) {
-                const idx = dataWorkshop.findIndex(x => x.id === id);
-                if (idx > -1) dataWorkshop[idx] = itemBaru;
-            } else {
-                dataWorkshop.push(itemBaru);
-            }
-            window.tutupModal("modal-form-workshop");
-            window.renderTabelWorkshop();
-        };
-
-        window.hapusWorkshop = function(id) {
-            if (!window.verifikasiPinPopup("MENGHAPUS baris pekerjaan ini")) return;
-            dataWorkshop = dataWorkshop.filter(x => x.id !== id);
-            window.renderTabelWorkshop();
-        };
-
-        window.prosesFotoWorkshop = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement("canvas");
-                    const maxW = 650;
-                    const scale = img.width > maxW ? (maxW / img.width) : 1;
-                    canvas.width = img.width * scale;
-                    canvas.height = img.height * scale;
-                    const ctx = canvas.getContext("2d");
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    document.getElementById("inp-data-foto-ws").value = canvas.toDataURL("image/jpeg", 0.8);
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        };
-        
         // Cetak 1 Nota & Foto Besar Spesifik (Sembunyikan tabel rekap utama saat print 1 nota)
         window.cetakSatuNota = function(idNota) {
             const ringkasan = document.getElementById("sec-ringkasan");
@@ -1170,13 +1080,12 @@
 
             window.renderTabelWorkshop(idNota);
 
-            setTimeout(() => {
-                window.print();
+            tungguFotoSiapLaluPrint(() => {
                 if (ringkasan) ringkasan.classList.remove("hidden");
                 if (ttdUmum) ttdUmum.style.display = "";
                 if (kotakTabelUtama) kotakTabelUtama.classList.remove("no-print");
                 window.renderTabelWorkshop(null);
-            }, 350);
+            });
         };
 
         window.bukaModalWorkshop = function() {
@@ -1316,7 +1225,7 @@
             const ringkasan = document.getElementById("sec-ringkasan");
             if (ringkasan) ringkasan.classList.remove("hidden");
             window.pindahTab("SEMUA");
-            setTimeout(() => { window.print(); }, 300);
+            tungguFotoSiapLaluPrint(() => {});
         };
 
         window.cetakBagianSaja = function(bagian) {
@@ -1342,10 +1251,9 @@
                 window.renderTabelWorkshop();
             }
 
-            setTimeout(() => {
-                window.print();
+            tungguFotoSiapLaluPrint(() => {
                 if (ringkasan) ringkasan.classList.remove("hidden");
-            }, 300);
+            });
         };
 
         window.exportBackupData = function() {
@@ -1406,6 +1314,105 @@
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
+        };
+
+        // =========================================================
+        // MESIN PENGIRIM LAPORAN: WHATSAPP, EMAIL & BLUETOOTH/SHARE
+        // =========================================================
+        const susunTeksLaporan = (mode) => {
+            const tglSekarang = new Date().toLocaleDateString("id-ID", { day: '2-digit', month: 'long', year: 'numeric' });
+            let teks = "";
+
+            if (mode === "SAFETY") {
+                let totalUpah = 0;
+                teks += `*${configSafety.judul}*\n`;
+                teks += `*PERIODE: ${configSafety.periode}*\n`;
+                teks += `----------------------------------------\n`;
+                dataWorkshop.forEach((w, i) => {
+                    const no = w.noUrut || (i + 1);
+                    const ket = w.pelaksana ? `${w.jenisKerja} (${w.pelaksana})` : w.jenisKerja;
+                    totalUpah += Number(w.biaya || 0);
+                    teks += `${no}. *${ket}*\n`;
+                    teks += `   • Tgl: ${w.tanggal || "-"} | Harga: ${formatRp(w.biaya)}\n`;
+                    teks += `   • Status: ${w.status || "-"}\n`;
+                });
+                const potongan = Number(configSafety.nominalKasbon || 0);
+                const bersih = totalUpah - potongan;
+                teks += `----------------------------------------\n`;
+                teks += `*TOTAL UPAH:* ${formatRp(totalUpah)}\n`;
+                teks += `*${configSafety.ketKasbon}:* -${formatRp(potongan)}\n`;
+                teks += `*TOTAL BERSIH SELURUHNYA:* *${formatRp(bersih)}*\n`;
+                teks += `----------------------------------------\n`;
+                teks += `Link Dokumen Resmi: ${window.location.href}`;
+            } else {
+                const pemasukan = document.getElementById("kpi-pemasukan")?.innerText || "Rp0";
+                const upah = document.getElementById("kpi-upah")?.innerText || "Rp0";
+                const hutang = document.getElementById("kpi-hutang")?.innerText || "Rp0";
+                const bahan = document.getElementById("kpi-bahan")?.innerText || "Rp0";
+                const saldo = document.getElementById("kpi-saldo")?.innerText || "Rp0";
+
+                teks += `*LAPORAN MANAJEMEN PROYEK & AKUNTANSI ANTRACK TZCO*\n`;
+                teks += `Tanggal: ${tglSekarang}\n`;
+                teks += `----------------------------------------\n`;
+                teks += `1. Total Anggaran Masuk: *${pemasukan}*\n`;
+                teks += `2. Total Upah Pekerja: *${upah}*\n`;
+                teks += `3. Total Hutang/Kasbon: *${hutang}*\n`;
+                teks += `4. Biaya Bahan & Alat: *${bahan}*\n`;
+                teks += `5. Sisa Saldo Kas Bersih: *${saldo}*\n`;
+                teks += `----------------------------------------\n`;
+                teks += `Detail Pekerjaan Safety (${configSafety.periode}): ${dataWorkshop.length} Item.\n`;
+                teks += `Buka & Cetak PDF di: ${window.location.href}`;
+            }
+            return teks;
+        };
+
+        window.kirimLaporanWA = function(mode) {
+            const pesan = susunTeksLaporan(mode);
+            const urlWA = "https://wa.me/?text=" + encodeURIComponent(pesan);
+            window.open(urlWA, "_blank");
+        };
+
+        window.kirimLaporanEmail = function(mode) {
+            const subjek = mode === "SAFETY"
+                ? `${configSafety.judul} - ${configSafety.periode}`
+                : `Laporan Manajemen Pekerjaan & Akuntansi Proyek ANTRACK TZCO`;
+            const isi = susunTeksLaporan(mode).replace(/\*/g, "");
+            window.location.href = `mailto:?subject=${encodeURIComponent(subjek)}&body=${encodeURIComponent(isi)}`;
+        };
+
+        window.kirimViaBluetooth = async function(mode) {
+            const teksLaporan = susunTeksLaporan(mode).replace(/\*/g, "");
+            const judulFile = mode === "SAFETY" ? "Laporan-Safety-Pak-Ujang.txt" : "Laporan-Lengkap-Antrack.txt";
+
+            if (navigator.share) {
+                try {
+                    const fileLaporan = new File([teksLaporan], judulFile, { type: "text/plain" });
+                    if (navigator.canShare && navigator.canShare({ files: [fileLaporan] })) {
+                        await navigator.share({
+                            title: configSafety.judul,
+                            text: teksLaporan,
+                            files: [fileLaporan]
+                        });
+                        return;
+                    }
+                    await navigator.share({
+                        title: configSafety.judul,
+                        text: teksLaporan,
+                        url: window.location.href
+                    });
+                    return;
+                } catch (err) {
+                    console.log("Share dibatalkan atau beralih ke unduh file.");
+                }
+            }
+
+            const blob = new Blob([teksLaporan], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = judulFile;
+            a.click();
+            alert("📡 File '" + judulFile + "' telah diunduh!\n\nUntuk kirim via Bluetooth di PC/HP:\n1. Klik kanan file yang baru terunduh (atau buka menu Share).\n2. Pilih 'Send to' -> 'Bluetooth device' -> Pilih perangkat tujuan.");
         };
 
         window.addEventListener("DOMContentLoaded", () => {
