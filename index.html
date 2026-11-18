@@ -43,17 +43,8 @@
 
             <!-- Menu Navigasi Desktop & Tombol PDF -->
             <div class="flex items-center gap-2">
-                <button onclick="window.cetakLaporanPDF()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm px-3 py-2 rounded-lg flex items-center gap-1.5 shadow cursor-pointer" title="Cetak atau Simpan PDF">
-                    <i class="fa-solid fa-file-pdf"></i> PDF / Print
-                </button>
-                <button onclick="window.kirimLaporanWA('SEMUA')" class="bg-green-600 hover:bg-green-500 text-white font-bold text-xs px-2.5 py-2 rounded-lg flex items-center gap-1 shadow cursor-pointer" title="Kirim Ringkasan via WhatsApp">
-                    <i class="fa-brands fa-whatsapp text-sm"></i> WA
-                </button>
-                <button onclick="window.kirimLaporanEmail('SEMUA')" class="bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs px-2.5 py-2 rounded-lg flex items-center gap-1 shadow cursor-pointer" title="Kirim Ringkasan via Email">
-                    <i class="fa-solid fa-envelope"></i> Email
-                </button>
-                <button onclick="window.kirimViaBluetooth('SEMUA')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-2.5 py-2 rounded-lg flex items-center gap-1 shadow cursor-pointer" title="Kirim File via Bluetooth / Share Perangkat">
-                    <i class="fa-brands fa-bluetooth-b"></i> Bluetooth
+                <button onclick="window.cetakLaporanPDF()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm px-3.5 py-2 rounded-lg flex items-center gap-1.5 shadow cursor-pointer">
+                    <i class="fa-solid fa-file-pdf"></i> Cetak / Kirim PDF
                 </button>
                 <button onclick="window.exportBackupData()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 font-bold text-xs px-3 py-2 rounded-lg flex items-center gap-1 cursor-pointer" title="Simpan File Data untuk Pindah HP ke PC">
                     <i class="fa-solid fa-download text-amber-400"></i> Backup
@@ -217,17 +208,8 @@
                         <p class="text-xs text-slate-300">Format tabel sesuai standar Manajemen Keuangan ANTRACK (Total Upah - Kasbon/DP = Total Bersih) + Lampiran Foto Besar.</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        <button onclick="window.cetakRekapSafety()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs px-3 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-print"></i> Cetak / PDF
-                        </button>
-                        <button onclick="window.kirimLaporanWA('SAFETY')" class="bg-green-600 hover:bg-green-500 text-white font-extrabold text-xs px-3 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-brands fa-whatsapp text-sm"></i> Kirim WA
-                        </button>
-                        <button onclick="window.kirimLaporanEmail('SAFETY')" class="bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs px-3 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-envelope"></i> Email
-                        </button>
-                        <button onclick="window.kirimViaBluetooth('SAFETY')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs px-3 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-brands fa-bluetooth-b"></i> Bluetooth / Share
+                        <button onclick="window.cetakRekapSafety()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-print"></i> Cetak Tabel Resmi (Format Keuangan)
                         </button>
                         <button onclick="window.bukaModalWorkshop()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-lg shadow flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-plus"></i> + Tambah Baris Pekerjaan (PIN)
@@ -1426,110 +1408,6 @@
             reader.readAsDataURL(file);
         };
 
-        // =========================================================
-        // MESIN PENGIRIM LAPORAN: WHATSAPP, EMAIL & BLUETOOTH/SHARE
-        // =========================================================
-        const susunTeksLaporan = (mode) => {
-            const tglSekarang = new Date().toLocaleDateString("id-ID", { day: '2-digit', month: 'long', year: 'numeric' });
-            let teks = "";
-
-            if (mode === "SAFETY") {
-                let totalUpah = 0;
-                teks += `*${configSafety.judul}*\n`;
-                teks += `*PERIODE: ${configSafety.periode}*\n`;
-                teks += `----------------------------------------\n`;
-                dataWorkshop.forEach((w, i) => {
-                    const no = w.noUrut || (i + 1);
-                    const ket = w.pelaksana ? `${w.jenisKerja} (${w.pelaksana})` : w.jenisKerja;
-                    totalUpah += Number(w.biaya || 0);
-                    teks += `${no}. *${ket}*\n`;
-                    teks += `   • Tgl: ${w.tanggal || "-"} | Harga: ${formatRp(w.biaya)}\n`;
-                    teks += `   • Status: ${w.status || "-"}\n`;
-                });
-                const potongan = Number(configSafety.nominalKasbon || 0);
-                const bersih = totalUpah - potongan;
-                teks += `----------------------------------------\n`;
-                teks += `*TOTAL UPAH:* ${formatRp(totalUpah)}\n`;
-                teks += `*${configSafety.ketKasbon}:* -${formatRp(potongan)}\n`;
-                teks += `*TOTAL BERSIH SELURUHNYA:* *${formatRp(bersih)}*\n`;
-                teks += `----------------------------------------\n`;
-                teks += `Link Dokumen Resmi: ${window.location.href}`;
-            } else {
-                const pemasukan = document.getElementById("kpi-pemasukan")?.innerText || "Rp0";
-                const upah = document.getElementById("kpi-upah")?.innerText || "Rp0";
-                const hutang = document.getElementById("kpi-hutang")?.innerText || "Rp0";
-                const bahan = document.getElementById("kpi-bahan")?.innerText || "Rp0";
-                const saldo = document.getElementById("kpi-saldo")?.innerText || "Rp0";
-
-                teks += `*LAPORAN MANAJEMEN PROYEK & AKUNTANSI ANTRACK TZCO*\n`;
-                teks += `Tanggal: ${tglSekarang}\n`;
-                teks += `----------------------------------------\n`;
-                teks += `1. Total Anggaran Masuk: *${pemasukan}*\n`;
-                teks += `2. Total Upah Pekerja: *${upah}*\n`;
-                teks += `3. Total Hutang/Kasbon: *${hutang}*\n`;
-                teks += `4. Biaya Bahan & Alat: *${bahan}*\n`;
-                teks += `5. Sisa Saldo Kas Bersih: *${saldo}*\n`;
-                teks += `----------------------------------------\n`;
-                teks += `Detail Pekerjaan Safety (${configSafety.periode}): ${dataWorkshop.length} Item.\n`;
-                teks += `Buka & Cetak PDF di: ${window.location.href}`;
-            }
-            return teks;
-        };
-
-        // 1. Kirim via WhatsApp
-        window.kirimLaporanWA = function(mode) {
-            const pesan = susunTeksLaporan(mode);
-            const urlWA = "https://wa.me/?text=" + encodeURIComponent(pesan);
-            window.open(urlWA, "_blank");
-        };
-
-        // 2. Kirim via Email
-        window.kirimLaporanEmail = function(mode) {
-            const subjek = mode === "SAFETY"
-                ? `${configSafety.judul} - ${configSafety.periode}`
-                : `Laporan Manajemen Pekerjaan & Akuntansi Proyek ANTRACK TZCO`;
-            const isi = susunTeksLaporan(mode).replace(/\*/g, "");
-            window.location.href = `mailto:?subject=${encodeURIComponent(subjek)}&body=${encodeURIComponent(isi)}`;
-        };
-
-        // 3. Kirim via Bluetooth / Panel Share Bawaan HP & Laptop
-        window.kirimViaBluetooth = async function(mode) {
-            const teksLaporan = susunTeksLaporan(mode).replace(/\*/g, "");
-            const judulFile = mode === "SAFETY" ? "Laporan-Safety-Pak-Ujang.txt" : "Laporan-Lengkap-Antrack.txt";
-
-            // Jika browser HP/Laptop mendukung Web Share API (Android/Windows 10/11)
-            if (navigator.share) {
-                try {
-                    const fileLaporan = new File([teksLaporan], judulFile, { type: "text/plain" });
-                    if (navigator.canShare && navigator.canShare({ files: [fileLaporan] })) {
-                        await navigator.share({
-                            title: configSafety.judul,
-                            text: teksLaporan,
-                            files: [fileLaporan]
-                        });
-                        return;
-                    }
-                    await navigator.share({
-                        title: configSafety.judul,
-                        text: teksLaporan,
-                        url: window.location.href
-                    });
-                    return;
-                } catch (err) {
-                    console.log("Share dibatalkan atau beralih ke unduh file.");
-                }
-            }
-
-            // Fallback untuk PC lama: Otomatis unduh file laporan ringan agar siap dikirim via Bluetooth Windows
-            const blob = new Blob([teksLaporan], { type: "text/plain;charset=utf-8" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = judulFile;
-            a.click();
-            alert("📡 File '" + judulFile + "' telah diunduh!\n\nUntuk kirim via Bluetooth di PC/HP:\n1. Klik kanan file yang baru terunduh (atau buka menu Share).\n2. Pilih 'Send to' -> 'Bluetooth device' -> Pilih perangkat tujuan.");
-        };
-        
         window.addEventListener("DOMContentLoaded", () => {
             window.renderSemua();
             window.renderTabelWorkshop();
