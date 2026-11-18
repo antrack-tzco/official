@@ -1158,6 +1158,256 @@
             reader.readAsDataURL(file);
         };
         
+        // Cetak 1 Nota & Foto Besar Spesifik (Sembunyikan tabel rekap utama saat print 1 nota)
+        window.cetakSatuNota = function(idNota) {
+            const ringkasan = document.getElementById("sec-ringkasan");
+            const ttdUmum = document.getElementById("ttd-umum-bawah");
+            const kotakTabelUtama = document.getElementById("tabel-workshop")?.closest(".print-box");
+
+            if (ringkasan) ringkasan.classList.add("hidden");
+            if (ttdUmum) ttdUmum.style.display = "none";
+            if (kotakTabelUtama) kotakTabelUtama.classList.add("no-print");
+
+            window.renderTabelWorkshop(idNota);
+
+            setTimeout(() => {
+                window.print();
+                if (ringkasan) ringkasan.classList.remove("hidden");
+                if (ttdUmum) ttdUmum.style.display = "";
+                if (kotakTabelUtama) kotakTabelUtama.classList.remove("no-print");
+                window.renderTabelWorkshop(null);
+            }, 350);
+        };
+
+        window.bukaModalWorkshop = function() {
+            document.getElementById("judul-modal-workshop").innerText = "Tambah Baris Pekerjaan Safety / Aksesoris";
+            document.getElementById("inp-id-ws").value = "";
+            document.getElementById("inp-nourut-ws").value = buatNomorNotaOtomatis();
+            document.getElementById("inp-tgl-ws").value = new Date().toISOString().split('T')[0];
+            document.getElementById("inp-kategori-ws").value = "";
+            document.getElementById("inp-jenis-ws").value = "";
+            document.getElementById("inp-pelaksana-ws").value = "";
+            document.getElementById("inp-biaya-ws").value = "";
+            document.getElementById("inp-status-ws").value = "READY (BELUM ADA PEMILIK)";
+            document.getElementById("inp-catatan-ws").value = "";
+            document.getElementById("inp-data-foto-ws").value = "";
+            document.getElementById("inp-foto-ws").value = "";
+            document.getElementById("pin-simpan-ws").value = "";
+            document.getElementById("modal-form-workshop").classList.remove("hidden");
+        };
+
+        window.editWorkshop = function(id) {
+            if (!window.verifikasiPinPopup("membuka menu Edit Pekerjaan Safety")) return;
+            const item = dataWorkshop.find(x => x.id === id);
+            if (!item) return;
+            document.getElementById("judul-modal-workshop").innerText = "Edit Baris Pekerjaan (No. " + (item.noUrut || "") + ")";
+            document.getElementById("inp-id-ws").value = item.id;
+            document.getElementById("inp-nourut-ws").value = item.noUrut || buatNomorNotaOtomatis();
+            document.getElementById("inp-tgl-ws").value = item.tanggal;
+            document.getElementById("inp-kategori-ws").value = "";
+            document.getElementById("inp-jenis-ws").value = item.jenisKerja;
+            document.getElementById("inp-pelaksana-ws").value = item.pelaksana;
+            document.getElementById("inp-biaya-ws").value = item.biaya;
+            document.getElementById("inp-status-ws").value = item.status;
+            document.getElementById("inp-catatan-ws").value = item.catatan || "";
+            document.getElementById("inp-data-foto-ws").value = item.foto || "";
+            document.getElementById("pin-simpan-ws").value = SANDI_PIN_ADMIN;
+            document.getElementById("modal-form-workshop").classList.remove("hidden");
+        };
+
+        window.simpanDataWorkshop = function() {
+            const pin = document.getElementById("pin-simpan-ws").value.trim();
+            if (pin !== SANDI_PIN_ADMIN) {
+                alert("❌ SANDI PIN 4 DIGIT SALAH! Data gagal disimpan.");
+                return;
+            }
+            const id = document.getElementById("inp-id-ws").value;
+            const itemBaru = {
+                id: id || "WS-" + Date.now(),
+                noUrut: document.getElementById("inp-nourut-ws").value.trim() || buatNomorNotaOtomatis(),
+                tanggal: document.getElementById("inp-tgl-ws").value,
+                kategori: "SAFETY & AKSESORIS",
+                jenisKerja: document.getElementById("inp-jenis-ws").value.trim().toUpperCase() || "SAFETY TZCO",
+                pelaksana: document.getElementById("inp-pelaksana-ws").value.trim().toUpperCase() || "",
+                tipePelaksana: "TEAM SAFETY",
+                biaya: Number(document.getElementById("inp-biaya-ws").value || 0),
+                status: document.getElementById("inp-status-ws").value.trim().toUpperCase() || "READY",
+                catatan: document.getElementById("inp-catatan-ws").value.trim() || "",
+                foto: document.getElementById("inp-data-foto-ws").value || ""
+            };
+
+            if (id) {
+                const idx = dataWorkshop.findIndex(x => x.id === id);
+                if (idx > -1) dataWorkshop[idx] = itemBaru;
+            } else {
+                dataWorkshop.push(itemBaru);
+            }
+            window.tutupModal("modal-form-workshop");
+            window.renderTabelWorkshop();
+        };
+
+        window.hapusWorkshop = function(id) {
+            if (!window.verifikasiPinPopup("MENGHAPUS baris pekerjaan ini")) return;
+            dataWorkshop = dataWorkshop.filter(x => x.id !== id);
+            window.renderTabelWorkshop();
+        };
+
+        window.prosesFotoWorkshop = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement("canvas");
+                    const maxW = 650;
+                    const scale = img.width > maxW ? (maxW / img.width) : 1;
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    document.getElementById("inp-data-foto-ws").value = canvas.toDataURL("image/jpeg", 0.8);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        // =========================================================
+        // NAVIGASI TAB, CETAK LAPORAN, BACKUP & KOMPRES FOTO PEKERJA
+        // =========================================================
+        window.pindahTab = function(tab) {
+            const secPekerja = document.getElementById("sec-pekerja");
+            const secBahan = document.getElementById("sec-bahan");
+            const secWorkshop = document.getElementById("sec-workshop");
+            const daftar = ["PEKERJA", "BAHAN", "SEMUA", "WORKSHOP"];
+
+            daftar.forEach(t => {
+                const btn = document.getElementById("tab-btn-" + t);
+                if (btn) {
+                    btn.className = (t === tab)
+                        ? "px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold bg-amber-500 text-slate-950 cursor-pointer"
+                        : "px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer";
+                }
+            });
+
+            if (tab === "PEKERJA") {
+                secPekerja.classList.remove("hidden");
+                secBahan.classList.add("hidden");
+                if (secWorkshop) secWorkshop.classList.add("hidden");
+            } else if (tab === "BAHAN") {
+                secPekerja.classList.add("hidden");
+                secBahan.classList.remove("hidden");
+                if (secWorkshop) secWorkshop.classList.add("hidden");
+            } else if (tab === "WORKSHOP") {
+                secPekerja.classList.add("hidden");
+                secBahan.classList.add("hidden");
+                if (secWorkshop) secWorkshop.classList.remove("hidden");
+                window.renderTabelWorkshop();
+            } else {
+                secPekerja.classList.remove("hidden");
+                secBahan.classList.remove("hidden");
+                if (secWorkshop) secWorkshop.classList.remove("hidden");
+                window.renderTabelWorkshop();
+            }
+        };
+
+        window.cetakLaporanPDF = function() {
+            const ringkasan = document.getElementById("sec-ringkasan");
+            if (ringkasan) ringkasan.classList.remove("hidden");
+            window.pindahTab("SEMUA");
+            setTimeout(() => { window.print(); }, 300);
+        };
+
+        window.cetakBagianSaja = function(bagian) {
+            const ringkasan = document.getElementById("sec-ringkasan");
+            const secPekerja = document.getElementById("sec-pekerja");
+            const secBahan = document.getElementById("sec-bahan");
+            const secWorkshop = document.getElementById("sec-workshop");
+
+            if (ringkasan) ringkasan.classList.add("hidden");
+
+            if (bagian === "PEKERJA") {
+                secPekerja.classList.remove("hidden");
+                secBahan.classList.add("hidden");
+                if (secWorkshop) secWorkshop.classList.add("hidden");
+            } else if (bagian === "BAHAN") {
+                secPekerja.classList.add("hidden");
+                secBahan.classList.remove("hidden");
+                if (secWorkshop) secWorkshop.classList.add("hidden");
+            } else if (bagian === "WORKSHOP") {
+                secPekerja.classList.add("hidden");
+                secBahan.classList.add("hidden");
+                if (secWorkshop) secWorkshop.classList.remove("hidden");
+                window.renderTabelWorkshop();
+            }
+
+            setTimeout(() => {
+                window.print();
+                if (ringkasan) ringkasan.classList.remove("hidden");
+            }, 300);
+        };
+
+        window.exportBackupData = function() {
+            const paket = {
+                pekerja: dataPekerja,
+                keuangan: dataKeuangan,
+                workshop: dataWorkshop,
+                configSafety: configSafety
+            };
+            const blob = new Blob([JSON.stringify(paket, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "data-proyek-keuangan.json";
+            a.click();
+        };
+
+        window.importBackupData = function(event) {
+            if (!window.verifikasiPinPopup("MEMUAT / MENIMPA data dari file Backup")) return;
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const isi = JSON.parse(e.target.result);
+                    if (isi.pekerja && isi.keuangan) {
+                        dataPekerja = isi.pekerja;
+                        dataKeuangan = isi.keuangan;
+                        if (isi.workshop) dataWorkshop = isi.workshop;
+                        if (isi.configSafety) configSafety = isi.configSafety;
+                        window.renderSemua();
+                        window.renderTabelWorkshop();
+                        alert("✅ Data berhasil dimuat!");
+                    }
+                } catch (err) {
+                    alert("❌ Format file tidak valid.");
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        window.prosesFotoKerja = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement("canvas");
+                    const maxW = 300;
+                    const scale = maxW / img.width;
+                    canvas.width = maxW;
+                    canvas.height = img.height * scale;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    document.getElementById("inp-data-foto").value = canvas.toDataURL("image/jpeg", 0.7);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
         window.addEventListener("DOMContentLoaded", () => {
             window.renderSemua();
             window.renderTabelWorkshop();
